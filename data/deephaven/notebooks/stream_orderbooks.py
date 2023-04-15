@@ -5,6 +5,7 @@ import json
 import numpy as np
 import deephaven.dtypes as dht
 import deephaven.pandas as dhpd
+from deephaven.plot.figure import Figure
 import deephaven.stream.kafka.consumer as ck
 from deephaven import agg, merge
 from deephaven.table import Table
@@ -12,7 +13,8 @@ import deephaven
 import deephaven_tools as tools
 
 
-# latest ticks from Kafka (init as ring table to hold latest ticks in memory until the 'final_ring' is created below)
+
+# stream table from Kafka
 orderbooks = ck.consume(
   {'bootstrap.servers': 'redpanda:29092'},
   'orderbooks',
@@ -24,7 +26,7 @@ orderbooks = ck.consume(
     ('bid', dht.string),  # json as string
     ('ask', dht.string),  # json as string
   ]),
-  table_type=ck.TableType.ring(10000))\
+  table_type=ck.TableType.stream())\
   .update_view([
     #'is_db = (long) 0',
     'ts_bin = lowerBin(ts, SECOND)',
@@ -32,11 +34,13 @@ orderbooks = ck.consume(
 
 
 def extract_book_level(x: str, level: int, field: str) -> np.float64:
-  if field == 'price':
-    return np.float64(list(json.loads(x).keys())[level])
-  elif field == 'size':
-    return list(json.loads(x).values())[level]
-    
+    """Orderbook JSON string -> dict() -> float of price/size at level"""
+    if field == 'price':
+        return np.float64(list(json.loads(x).keys())[level])
+    elif field == 'size':
+        return list(json.loads(x).values())[level]
+
+
 quotes_l1_stream = orderbooks.view([
   'ts',
   'ts_bin',
@@ -50,27 +54,39 @@ quotes_l1_stream = orderbooks.view([
   'spread_bps = spread / mid * 10000',
 ])
 
+# create ring table
+quotes_l1_ring = tools.make_ring(quotes_l1_stream, 200000).tail_by(50000, ['symbol', 'ts_bin'])
 
-# final ring table with utility above
-quote_l1 = tools.make_ring(quotes_l1_stream, 200)
-
-
-
-
-
-quote_l1_ring = tools.make_ring(quotes_l1_stream, 5000) #.tail_by(100, ['symbol']).sort('ts_bin')
+quotes_per_second = orderbooks\
+  .agg_by([agg.count_('count')], by=["ts_bin"])\
+  .tail(10)
 
 
-k2 = quote_l1_ring.tail_by(2, ['ts_bin', 'symbol']).sort(['ts', 'symbol'])
 
-lst = []
-for symbol in ['BTC-USD', 'ETH-USD']:
-  lst.append(tools.make_ring(quotes_l1_stream.where([f'symbol ==`{symbol}`']), 100).tail_by(3,['ts_bin']))
+# some plots
+quotes_one_symbol = quotes_l1_ring.where(['symbol == `BTC-USD`'])
 
+plot_bid_vs_ask = Figure()\
+  .plot_xy(series_name="BID", t=quotes_one_symbol, x="ts", y="bid")\
+  .plot_xy(series_name="ASK", t=quotes_one_symbol, x="ts", y="ask")\
+  .show()
 
-k2 = merge(lst)
+#plot bid-ask spread
+plot_spread_bps = Figure()\
+  .plot_xy(series_name="SPREAD_BPS", t=quotes_one_symbol, x="ts", y="spread_bps")\
+  .show()
 
-quote_l1 = tools.make_ring(quotes_l1_stream, 5000).tail_by(2, ['ts_bin', 'symbol'])
+ 
+# from deephaven.plot import LineEndStyle, LineJoinStyle, LineStyle, Colors
 
+# figure = Figure()
+# plot_step = figure\
+#     .axes(plot_style=PlotStyle.STEP)\
+#     .plot_xy(series_name="HeartRate", t=source, x="Time", y="HeartRate")\
+#     .line(style=LineStyle(width=1.0, end_style=LineEndStyle.ROUND))\
+#     .show()
 
-symbolA = quote_l1.where(['symbol == `BTC-USD`'])
+# f = Figure(rows=1, cols=2)\
+#     .new_chart(row=0, col=0).plot_xy(series_name="SPREAD", t=quotes_one_symbol, x="ts", y="spread")\
+#     .new_chart(row=0, col=1).plot_xy(series_name="SPREAD_BPS", t=quotes_one_symbol, x="ts", y="spread_bps")\
+#     .show()
