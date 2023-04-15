@@ -3,10 +3,9 @@ TLDR;
 Deephaven Community doesn't provide a built-in persistent storage layer (as of Apr 2023), so let's use 
 [Clickhouse](https://clickhouse.com/) to create one.<br><br>
 This repo shows how to 
-
-* leverage [Cryptofeed](https://github.com/bmoscon/cryptofeed) to subscribe to 24/7 real-time Crypto market data,
-* push the data onto Kafka to create data live streams, and 
-* persist the streams in Clickhouse via its Kafka Table Engine, and
+* leverage [Cryptofeed](https://github.com/bmoscon/cryptofeed) to subscribe to 24/7 real-time Crypto market data
+* push the data onto Kafka to create data live streams
+* persist the streams via the Clickhouse Kafka Table Engine
 * access real-time streams and historical data from the DH UI, plus some magic to stitch them together
 
 ## General Setup 
