@@ -1,0 +1,4 @@
+cryptofeed==2.2.2
+aiokafka==0.7.2
+yapic
+./

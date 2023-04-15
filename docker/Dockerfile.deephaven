@@ -1,0 +1,4 @@
+FROM ghcr.io/deephaven/server:0.23.0
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONPATH “${PYTHONPATH}:/data/storage/notebooks
+RUN pip3 install clickhouse-connect
