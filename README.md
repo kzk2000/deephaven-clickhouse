@@ -7,6 +7,7 @@ This repo shows how to
 * push the data onto Kafka to create data live streams
 * persist the streams via the Clickhouse Kafka Table Engine
 * access real-time streams and historical data from the DH UI, plus some magic to stitch them together
+* build a Deephaven app mode around it
 
 ## General Setup 
 Everything should "just work", simply run ```docker-compose up -d``` (ideally let it run 24/7 on a server)
