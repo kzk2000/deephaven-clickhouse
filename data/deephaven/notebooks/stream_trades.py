@@ -47,7 +47,7 @@ trades_clickhouse = tools.query_clickhouse(query_history)
 # merge history (ClickHouse) + latest (Kafka) into one table, 
 # the .last_by(['symbol', 'exchange', 'ts', 'KafkaOffset']) ensures no dups after stitching
 trades_stream = merge([trades_clickhouse, trades_kafka])
-trades = Table(JRingTableTools.of(trades_stream.j_table, 20000)) \
+trades = tools.make_ring(trades_stream, 20000) \
     .last_by(['symbol', 'exchange', 'ts', 'KafkaOffset']) \
     .drop_columns(['KafkaOffset']) \
     .sort(['ts'])
