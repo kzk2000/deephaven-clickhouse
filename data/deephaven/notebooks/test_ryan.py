@@ -11,6 +11,7 @@ from deephaven.table import Table
 import deephaven
 import deephaven_tools as tools
 
+# create a small
 orderbooks = ck.consume(
   {'bootstrap.servers': 'redpanda:29092'},
   'orderbooks',
@@ -22,7 +23,7 @@ orderbooks = ck.consume(
     ('bid', dht.string),  # json as string
     ('ask', dht.string),  # json as string
   ]),
-  table_type=ck.TableType.ring(100))\
+  table_type=ck.TableType.ring(1000))\
   .update_view([
     'ts_bin = lowerBin(ts, SECOND)',
   ]).last_by(['ts_bin', 'symbol'])

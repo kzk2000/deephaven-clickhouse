@@ -30,7 +30,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile.deephaven
     environment:
-      JAVA_OPTS: -Xmx8g -Dio.deephaven.app.GcApplication.enabled=true
+      JAVA_OPTS: -Xmx24g -Dio.deephaven.app.GcApplication.enabled=true
       START_OPS: -Ddeephaven.console.type=python -Ddeephaven.application.dir=/data_dh/storage/app.d
     ports:
       - "10000:10000"
