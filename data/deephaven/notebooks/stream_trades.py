@@ -32,14 +32,11 @@ trades_kafka = ck.consume(
 trades_kafka.j_table.awaitUpdate()  # this waits for at least 1 tick before we continue below this line
 
 # historical ticks from ClickHouse
-first_ts = trades_kafka.agg_by([agg.min_('ts')])
-first_ts_py = dhpd.to_pandas(first_ts).iloc[0, 0]
-
 query_history = f"""
   SELECT *, toInt64(1) as is_db FROM cryptofeed.trades
   WHERE 
     ts >= now() - INTERVAL 3 HOUR
-    AND ts <= '{first_ts_py}'
+    AND ts <= '{tools.get_first_ts(trades_kafka)}'
   ORDER BY ts ASC
 """
 trades_clickhouse = tools.query_clickhouse(query_history)

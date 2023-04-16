@@ -5,9 +5,16 @@ import json
 import jpy
 import numpy as np
 from deephaven.table import Table
+from deephaven import agg, merge
 
 JRingTableTools = jpy.get_type('io.deephaven.engine.table.impl.sources.ring.RingTableTools')
 JsonNode = deephaven.dtypes.DType('com.fasterxml.jackson.databind.JsonNode')
+
+
+def get_first_ts(ticking_table):
+    first_ts = ticking_table.agg_by([agg.min_('ts')])
+    first_ts_py = dhpd.to_pandas(first_ts).iloc[0, 0]   
+    return first_ts_py
 
 
 def make_ring(t: Table, size: int) -> Table:
@@ -44,18 +51,21 @@ def get_ticks(symbols: list, n_ticks=10000):
     return query_clickhouse(query_ticks)
 
 
-def get_candles(symbols: list):
+def get_candles(symbols: list, n_rows=100, freq='5 minute'):
     symbol_filter = ",".join([f"'{x}'" for x in symbols])
 
     query_candles = f"""
     SELECT 
       symbol,
-      toStartOfFiveMinute(ts)                       AS candle_st,
+      toStartOfInterval(ts, INTERVAL {freq})        AS candle_st,
       argMin(price, ts)                             AS openp,
       max(price)                                    AS highp,
       min(price)                                    AS lowp,
       argMax(price, ts)                             AS closep,
       sum(price*size) / sum(size)                   AS vwap,
+    --  avg(closep) OVER (PARTITION BY symbol ORDER BY ts ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING) AS prev_closep
+      closep/openp - 1                              AS ret_o2c,
+      --closep/prev_closep - 1                        AS ret c2c,
       sum(size)                                     AS volume,
       sum(if(side='buy', size, 0))                  AS volume_buys,
       sum(if(side!='buy', size, 0))                 AS volume_sells,
@@ -66,5 +76,6 @@ def get_candles(symbols: list):
       symbol in ({symbol_filter})
     GROUP BY symbol, candle_st
     ORDER BY candle_st ASC, symbol ASC
+    LIMIT {int(abs(n_rows))}
     """
     return query_clickhouse(query_candles)
