@@ -55,8 +55,8 @@ services:
     networks:
         - ch_ntw
 
-  kafkafeed:
-    container_name: kafkafeed
+  cryptofeed:
+    container_name: cryptofeed
     build:
       context: .
       dockerfile: build/Dockerfile.cryptofeed
