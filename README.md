@@ -13,21 +13,23 @@ This repo shows how to
 Everything should "just work", simply run ```docker-compose up -d``` (ideally let it run 24/7 on a server)
 * Deephaven UI is running at http://localhost:10000/ide/
 * ClickHouse Play is running at http://localhost:8123/play
-  * CLICKHOUSE_USER: default, CLICKHOUSE_PASSWORD: password
-* Data will be stored locally under the `/data/[deephaven|clickhouse]` folders which are mounted into the docker images
+  * CLICKHOUSE_USER: default
+  * CLICKHOUSE_PASSWORD: password
+
+* Data is stored locally under the `/data/[deephaven|clickhouse]` folders which are mounted into the docker images
 
 ## Project structure
 ```
 ├── build                               <- Docker build and startup scripts 
-│   ├── Dockerfile.cryptofeed               <- Dockerfile for CryptoFeed subscriptions
+│   ├── Dockerfile.cryptofeed               <- Dockerfile for Cryptofeed subscriptions
 │   ├── Dockerfile.deephaven                <- Dockerfile for Deephaven server
 │   ├── init_orderbooks.sql                 <- init script to create cryptfeed.trades* tables
 │   ├── init_trades.sql                     <- init script to create cryptfeed.orderbooks* tables
 │   └── wait-for-it.sh                      <- helper to wait for host:port service to be ready
 │
 ├── data                                <- Project data
-│   ├── clickhouse                          <- mount to store 'clickhouse' container data
-│   └── deephaven                           <- Data mount for 'deephaven' container
+│   ├── clickhouse                          <- volume mount to store 'clickhouse' data
+│   └── deephaven                           <- volume mount to store 'deephaven' scripts
 │       ├── app.d                           <- Deephaven app mode config
 │       ├── layouts                         <- Deephaven app layout 
 │       └── notebooks                       <- Deephaven File Explorer 
@@ -38,7 +40,7 @@ Everything should "just work", simply run ```docker-compose up -d``` (ideally le
 │   │   ├── cryptofeed_1_trades.py          <- script for trades subcription
 │   │   └── cryptofeed_2_orderbooks.py      <- script for orderbook subcription
 │   │ 
-│   └── cryptofeed_tools.py             <- wrappers for CryptoFeed APIs
+│   └── cryptofeed_tools.py             <- wrappers for Cryptofeed APIs
 │
 ├── .gitignore                          <- List of files ignored by git
 ├── requirements.txt                    <- File for installing python dependencies
