@@ -36,9 +36,9 @@ Everything should "just work", simply run ```docker-compose up -d``` (ideally le
 │   
 ├── src                                 <- Python files
 │   ├── script    
-│   │   ├── cryptofeed_0_startup.sh         <- startup script for cryptofeed container
-│   │   ├── cryptofeed_1_trades.py          <- script for trades subcription
-│   │   └── cryptofeed_2_orderbooks.py      <- script for orderbook subcription
+│   │   ├── cryptofeed_0_startup.sh         <- startup script for the Cryptofeed container
+│   │   ├── cryptofeed_1_trades.py          <- script for trades subcriptions
+│   │   └── cryptofeed_2_orderbooks.py      <- script for orderbook subcriptions
 │   │ 
 │   └── cryptofeed_tools.py             <- wrappers for Cryptofeed APIs
 │
