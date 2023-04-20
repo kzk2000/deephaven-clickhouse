@@ -29,7 +29,7 @@ reload(tools)
 symbols = ['BTC-USD']
 
 # get candles from ClickHouse
-candles_static = tools.get_candles(symbols, n_rows=50, freq='1 HOUR')
+candles_static = tools.get_candles(symbols, n_rows=10, freq='1 HOUR')
 
 
 # get ticks from ClickHouse

@@ -1,5 +1,4 @@
 .idea
-build/
 *~
 *.py[co]
 .DS_Store
@@ -9,6 +8,7 @@ __pycache__
 *.vscode
 *.egg-info
 data/clickhouse/*
+!data/clickhouse/.gitkeep
 data/parquet/*
 eggs
 zzz_private

@@ -6,9 +6,9 @@ import deephaven_tools as tools
 import jpy
 from deephaven import agg, merge
 from deephaven.table import Table
-
 from deephaven.plot import PlotStyle
 from deephaven.plot.figure import Figure
+from deephaven.plot.selectable_dataset import one_click
 
 # latest from Kafka (init as ring table to hold latest ticks in memory until the 'final_ring' is created below)
 trades_kafka = ck.consume(
@@ -56,10 +56,14 @@ tick_count_by_exch = trades.agg_by(agg.count_('count'), by=['symbol', 'exchange'
 last_trade = trades.last_by(['symbol']).sort(['symbol'])
 
 
-# FIXME: this doesn't apply the filter from the linker -- check with DH eng
-# plot_trades_one_symbol = Figure()\
-#   .plot_xy(series_name="TRD", t=trades, x="ts", y="price")\
-#   .show()
+
+# trades = ...
+toc = one_click(trades, by=['symbol'])
+
+# NOTE: this only works with InputFilter, still not sure how to attach it to Linker filters
+plot_toc = Figure()\
+  .plot_xy(series_name="TRD", t=toc, x="ts", y="price")\
+  .show()
 
 # trades_n_quotes = trades_ring.aj(table=quotes_l1_ring , on=["symbol", "ts"])
 # trades_n_quotesA = trades_n_quotes.where(['symbol == `BTC-USD`']).tail(300)

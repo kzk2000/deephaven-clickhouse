@@ -4,7 +4,7 @@ Deephaven Community doesn't provide a built-in persistent storage layer (as of A
 [Clickhouse](https://clickhouse.com/) to create one.<br><br>
 This repo shows how to 
 * leverage [Cryptofeed](https://github.com/bmoscon/cryptofeed) to subscribe to 24/7 real-time Crypto market data
-* push the data onto Kafka to create data live streams
+* push the data onto Kafka to create live streams
 * persist the streams via the Clickhouse Kafka Table Engine
 * access real-time streams and historical data from the DH UI, plus some magic to stitch them together
 * build a Deephaven app mode around it
@@ -16,6 +16,35 @@ Everything should "just work", simply run ```docker-compose up -d``` (ideally le
   * CLICKHOUSE_USER: default, CLICKHOUSE_PASSWORD: password
 * Data will be stored locally under the `/data/[deephaven|clickhouse]` folders which are mounted into the docker images
 
+## Project structure
+```
+├── build                               <- Docker build and startup scripts 
+│   ├── Dockerfile.cryptofeed               <- Dockerfile for CryptoFeed subscriptions
+│   ├── Dockerfile.deephaven                <- Dockerfile for Deephaven server
+│   ├── init_orderbooks.sql                 <- init script to create cryptfeed.trades* tables
+│   ├── init_trades.sql                     <- init script to create cryptfeed.orderbooks* tables
+│   └── wait-for-it.sh                      <- helper to wait for host:port service to be ready
+│
+├── data                                <- Project data
+│   ├── clickhouse                          <- mount to store 'clickhouse' container data
+│   └── deephaven                           <- Data mount for 'deephaven' container
+│       ├── app.d                           <- Deephaven app mode config
+│       ├── layouts                         <- Deephaven app layout 
+│       └── notebooks                       <- Deephaven File Explorer 
+│   
+├── src                                 <- Python files
+│   ├── script    
+│   │   ├── cryptofeed_0_startup.sh         <- startup script for cryptofeed container
+│   │   ├── cryptofeed_1_trades.py          <- script for trades subcription
+│   │   └── cryptofeed_2_orderbooks.py      <- script for orderbook subcription
+│   │ 
+│   └── cryptofeed_tools.py             <- wrappers for CryptoFeed APIs
+│
+├── .gitignore                          <- List of files ignored by git
+├── requirements.txt                    <- File for installing python dependencies
+├── setup.py                            <- File for installing project as a package
+└── README.md
+```
 ## References
 * ClickHouse + Kafka: https://clickhouse.com/docs/en/engines/table-engines/integrations/kafka
   * [Kafka to ClickHouse](https://clickhouse.com/docs/en/integrations/kafka#kafka-to-clickhouse)

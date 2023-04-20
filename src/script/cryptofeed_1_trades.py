@@ -3,7 +3,7 @@ from cryptofeed import FeedHandler
 from cryptofeed.defines import TRADES
 from cryptofeed.exchanges import Coinbase, Bitstamp
 
-import kafkafeed.cryptofeed_tools as cft
+import src.cryptofeed_tools as cft
 
 
 def main():

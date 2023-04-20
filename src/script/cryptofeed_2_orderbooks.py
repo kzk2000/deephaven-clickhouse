@@ -2,7 +2,7 @@ from cryptofeed import FeedHandler
 from cryptofeed.defines import L2_BOOK
 from cryptofeed.exchanges import Coinbase
 
-import kafkafeed.cryptofeed_tools as cft
+import src.cryptofeed_tools as cft
 import os
 
 

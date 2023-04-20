@@ -28,7 +28,7 @@ services:
     container_name: deephaven
     build:
       context: .
-      dockerfile: docker/Dockerfile.deephaven
+      dockerfile: build/Dockerfile.deephaven
     environment:
       JAVA_OPTS: -Xmx24g -Dio.deephaven.app.GcApplication.enabled=true -Ddeephaven.application.dir=/data/storage/app.d
       START_OPS: -Ddeephaven.console.type=python
@@ -36,6 +36,7 @@ services:
       - "10000:10000"
     volumes:
       - ./data/deephaven:/data/storage
+      - ./data/parquet:/data/parquet
     networks:
       - ch_ntw
 
@@ -49,8 +50,8 @@ services:
       - "8123:8123"
     volumes:
       - ./data/clickhouse:/var/lib/clickhouse
-      - ./sql/init_trades.sql:/docker-entrypoint-initdb.d/init_trades.sql:ro
-      - ./sql/init_orderbooks.sql:/docker-entrypoint-initdb.d/init_orderbook.sql:ro
+      - ./build/init_trades.sql:/docker-entrypoint-initdb.d/init_trades.sql:ro
+      - ./build/init_orderbooks.sql:/docker-entrypoint-initdb.d/init_orderbook.sql:ro
     networks:
         - ch_ntw
 
@@ -58,7 +59,7 @@ services:
     container_name: kafkafeed
     build:
       context: .
-      dockerfile: docker/Dockerfile.cryptofeed
+      dockerfile: build/Dockerfile.cryptofeed
     depends_on:
       - redpanda
     networks:
