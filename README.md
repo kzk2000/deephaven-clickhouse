@@ -28,15 +28,15 @@ Everything should "just work", simply run ```docker-compose up -d``` (ideally le
 │   └── wait-for-it.sh                      <- helper to wait for host:port service to be ready
 │
 ├── data                                <- Project data
-│   ├── clickhouse                          <- volume mount to store 'clickhouse' data
-│   └── deephaven                           <- volume mount to store 'deephaven' scripts
+│   ├── clickhouse                          <- volume mount for the 'clickhouse' container
+│   └── deephaven                           <- volume mount for the 'deephaven' container
 │       ├── app.d                           <- Deephaven app mode config
 │       ├── layouts                         <- Deephaven app layout 
 │       └── notebooks                       <- Deephaven File Explorer 
 │   
 ├── src                                 <- Python files
 │   ├── script    
-│   │   ├── cryptofeed_0_startup.sh         <- startup script for the Cryptofeed container
+│   │   ├── cryptofeed_0_startup.sh         <- startup script for the 'cryptofeed' container
 │   │   ├── cryptofeed_1_trades.py          <- script for trades subcriptions
 │   │   └── cryptofeed_2_orderbooks.py      <- script for orderbook subcriptions
 │   │ 
