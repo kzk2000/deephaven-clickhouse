@@ -37,11 +37,14 @@ services:
     volumes:
       - ./data/deephaven:/data/storage
       - ./data/parquet:/data/parquet
+    depends_on:
+      - redpanda
+      - clickhouse
     networks:
       - ch_ntw
 
   clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse/clickhouse-server:23.4.1
     container_name: clickhouse
     environment:
       CLICKHOUSE_USER: default
