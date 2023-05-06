@@ -6,8 +6,6 @@ import jpy
 import numpy as np
 from deephaven.table import Table
 from deephaven import agg, merge
-dhpd._is_dtype_backend_supported = False
-
 
 JRingTableTools = jpy.get_type('io.deephaven.engine.table.impl.sources.ring.RingTableTools')
 JsonNode = deephaven.dtypes.DType('com.fasterxml.jackson.databind.JsonNode')
@@ -55,7 +53,7 @@ def get_ticks(symbols: list, n_ticks=10000):
     ORDER BY ts desc
     LIMIT {n_ticks}
     """
-    return query_clickhouse(query_ticks).sort(['ts'])
+    return query_clickhouse(query_ticks).reverse()
 
 
 def get_candles(symbols: list, n_rows=100, freq='5 minute'):
@@ -63,26 +61,27 @@ def get_candles(symbols: list, n_rows=100, freq='5 minute'):
 
     query_candles = f"""
     SELECT 
-      symbol,
-      toStartOfInterval(ts, INTERVAL {freq})        AS candle_st,
-      argMin(price, ts)                             AS openp,
-      max(price)                                    AS highp,
-      min(price)                                    AS lowp,
-      argMax(price, ts)                             AS closep,
-      sum(price*size) / sum(size)                   AS vwap,
+        symbol,
+        toDateTime64(toStartOfInterval(ts, INTERVAL {freq}),9)  AS candle_st,
+        argMin(price, ts)                                       AS openp,
+        max(price)                                              AS highp,
+        min(price)                                              AS lowp,
+        argMax(price, ts)                                       AS closep,
+        sum(price*size) / sum(size)                             AS vwap,
     --  avg(closep) OVER (PARTITION BY symbol ORDER BY ts ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING) AS prev_closep
-      closep/openp - 1                              AS ret_o2c,
-      --closep/prev_closep - 1                        AS ret c2c,
-      sum(size)                                     AS volume,
-      sum(if(side='buy', size, 0))                  AS volume_buys,
-      sum(if(side!='buy', size, 0))                 AS volume_sells,
-      toInt64(count(symbol))                        AS num_ticks,
-      pow(log(highp/lowp), 2) / (4*log(2)) * 10000  AS vola_pk
+        closep/openp - 1                                        AS ret_o2c,
+        --closep/prev_closep - 1                                AS ret c2c,
+        sum(size)                                               AS volume,
+        sum(if(side='buy', size, 0))                            AS volume_buys,
+        sum(if(side!='buy', size, 0))                           AS volume_sells,
+        toInt64(count(symbol))                                  AS num_ticks,
+        pow(log(highp/lowp), 2) / (4*log(2)) * 10000            AS vola_pk_bps
     FROM cryptofeed.trades
     WHERE
-      symbol in ({symbol_filter})
+        symbol in ({symbol_filter})
     GROUP BY symbol, candle_st
     ORDER BY candle_st DESC, symbol ASC
     LIMIT {int(abs(n_rows))}
     """
-    return query_clickhouse(query_candles).sort(['candle_st'])
+    return query_clickhouse(query_candles).reverse()
+

@@ -1,5 +1,7 @@
 import deephaven_tools as tools
 from deephaven.time import to_datetime
+import pandas as pd
+import numpy as np
 from importlib import reload
 reload(tools)
 
@@ -9,7 +11,7 @@ reload(tools)
 symbols = ['BTC-USD']
 
 # get candles from ClickHouse
-candles_static = tools.get_candles(symbols, n_rows=20, freq='1 minute')
+candles_static = tools.get_candles(symbols, n_rows=20, freq='15 minute')
 
 # get ticks from ClickHouse
 ticks_static = tools.get_ticks(symbols, n_ticks=100)
