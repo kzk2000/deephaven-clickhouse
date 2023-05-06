@@ -18,7 +18,7 @@ pq.write_to_dataset(
     existing_data_behavior='delete_matching',
     version="2.6")   # version="2.6" is required to save nanosecond timestamps
 
-dh_table = dhpq.read(root_folder, is_refreshing=True)  # 
+dh_table = dhpq.read(root_folder, is_refreshing=True)
 
 btc_only = dh_table.where(['symbol==`BTC-USD`'])
 

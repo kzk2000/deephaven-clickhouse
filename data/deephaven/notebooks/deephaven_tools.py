@@ -6,6 +6,8 @@ import jpy
 import numpy as np
 from deephaven.table import Table
 from deephaven import agg, merge
+dhpd._is_dtype_backend_supported = False
+
 
 JRingTableTools = jpy.get_type('io.deephaven.engine.table.impl.sources.ring.RingTableTools')
 JsonNode = deephaven.dtypes.DType('com.fasterxml.jackson.databind.JsonNode')
@@ -24,6 +26,11 @@ def make_ring(t: Table, size: int) -> Table:
 def query_clickhouse(query):
     with clickhouse_connect.get_client(host='clickhouse', username='default', password='password', port=8123) as client:
         return dhpd.to_table(client.query_df(query))
+
+
+def query_clickhouse_df(query):
+    with clickhouse_connect.get_client(host='clickhouse', username='default', password='password', port=8123) as client:
+        return client.query_df(query)
 
 
 def get_partitions(org_table, partition_by: str):
@@ -48,7 +55,7 @@ def get_ticks(symbols: list, n_ticks=10000):
     ORDER BY ts desc
     LIMIT {n_ticks}
     """
-    return query_clickhouse(query_ticks)
+    return query_clickhouse(query_ticks).sort(['ts'])
 
 
 def get_candles(symbols: list, n_rows=100, freq='5 minute'):
@@ -75,7 +82,7 @@ def get_candles(symbols: list, n_rows=100, freq='5 minute'):
     WHERE
       symbol in ({symbol_filter})
     GROUP BY symbol, candle_st
-    ORDER BY candle_st ASC, symbol ASC
+    ORDER BY candle_st DESC, symbol ASC
     LIMIT {int(abs(n_rows))}
     """
-    return query_clickhouse(query_candles)
+    return query_clickhouse(query_candles).sort(['candle_st'])
