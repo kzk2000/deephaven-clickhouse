@@ -64,16 +64,4 @@ plot_toc = Figure()\
   .plot_xy(series_name="TRD", t=toc, x="ts", y="price")\
   .show()
 
-# trades_n_quotes = trades_ring.aj(table=quotes_l1_ring , on=["symbol", "ts"])
-# trades_n_quotesA = trades_n_quotes.where(['symbol == `BTC-USD`']).tail(300)
 
-# plot_bid_vs_ask = Figure()\
-#   .chart_title(title="Trades & Quotes")\
-#   .plot_xy(series_name="TRD_BUY", t=trades_n_quotesA.where('side==`buy`'), x="ts", y="price")\
-#   .plot_xy(series_name="TRD_SELL", t=trades_n_quotesA.where('side==`sell`'), x="ts", y="price")\
-#   .axes(plot_style=PlotStyle.SCATTER)\
-#   .twin()\
-#   .plot_xy(series_name="BID", t=trades_n_quotesA, x="ts", y="bid")\
-#   .plot_xy(series_name="ASK", t=trades_n_quotesA, x="ts", y="ask")\
-#   .axes(plot_style=PlotStyle.STEP)\
-#   .show()
