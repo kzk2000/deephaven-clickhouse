@@ -56,8 +56,7 @@ tick_count_by_exch = trades.agg_by(agg.count_('count'), by=['symbol', 'exchange'
 last_trade = trades.last_by(['symbol']).sort(['symbol'])
 
 
-
-# trades = ...
+# set up chart that's connected via Linker
 toc = one_click(trades, by=['symbol'])
 
 # NOTE: this only works with InputFilter, still not sure how to attach it to Linker filters

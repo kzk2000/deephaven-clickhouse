@@ -6,12 +6,12 @@ import numpy as np
 import deephaven.dtypes as dht
 import deephaven.pandas as dhpd
 from deephaven.plot.figure import Figure
+from deephaven.plot import LineEndStyle, LineJoinStyle, LineStyle, Colors
 import deephaven.stream.kafka.consumer as ck
 from deephaven import agg, merge
 from deephaven.table import Table
 import deephaven
 import deephaven_tools as tools
-
 
 
 # stream table from Kafka
@@ -61,10 +61,8 @@ quotes_per_second = orderbooks\
   .agg_by([agg.count_('count')], by=["ts_bin"])\
   .tail(10)
 
-
-
-# some plots
 quotes_one_symbol = quotes_l1_ring.where(['symbol == `BTC-USD`'])
+
 
 plot_bid_vs_ask = Figure()\
   .plot_xy(series_name="BID", t=quotes_one_symbol, x="ts", y="bid")\
@@ -76,17 +74,24 @@ plot_spread_bps = Figure()\
   .plot_xy(series_name="SPREAD_BPS", t=quotes_one_symbol, x="ts", y="spread_bps")\
   .show()
 
+
+trades_n_quotes = trades.aj(table=quotes_l1_ring , on=["symbol", "ts"])
+trades_n_quotesA = trades_n_quotes.where(['symbol == `BTC-USD`']).tail(300)
+
+plot_bid_vs_ask = Figure()\
+  .chart_title(title="Trades & Quotes")\
+  .plot_xy(series_name="TRD_BUY", t=trades_n_quotesA.where('side==`buy`'), x="ts", y="price")\
+  .plot_xy(series_name="TRD_SELL", t=trades_n_quotesA.where('side==`sell`'), x="ts", y="price")\
+  .axes(plot_style=PlotStyle.SCATTER)\
+  .twin()\
+  .plot_xy(series_name="BID", t=trades_n_quotesA, x="ts", y="bid")\
+  .plot_xy(series_name="ASK", t=trades_n_quotesA, x="ts", y="ask")\
+  .axes(plot_style=PlotStyle.STEP)\
+  .show()
  
-# from deephaven.plot import LineEndStyle, LineJoinStyle, LineStyle, Colors
 
-# figure = Figure()
-# plot_step = figure\
-#     .axes(plot_style=PlotStyle.STEP)\
-#     .plot_xy(series_name="HeartRate", t=source, x="Time", y="HeartRate")\
-#     .line(style=LineStyle(width=1.0, end_style=LineEndStyle.ROUND))\
-#     .show()
-
-# f = Figure(rows=1, cols=2)\
-#     .new_chart(row=0, col=0).plot_xy(series_name="SPREAD", t=quotes_one_symbol, x="ts", y="spread")\
-#     .new_chart(row=0, col=1).plot_xy(series_name="SPREAD_BPS", t=quotes_one_symbol, x="ts", y="spread_bps")\
-#     .show()
+# 
+f = Figure(rows=1, cols=2)\
+    .new_chart(row=0, col=0).plot_xy(series_name="SPREAD", t=quotes_one_symbol, x="ts", y="spread")\
+    .new_chart(row=0, col=1).plot_xy(series_name="SPREAD_BPS", t=quotes_one_symbol, x="ts", y="spread_bps")\
+    .show()

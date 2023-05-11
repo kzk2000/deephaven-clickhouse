@@ -44,7 +44,7 @@ services:
       - ch_ntw
 
   clickhouse:
-    image: clickhouse/clickhouse-server:23.4.1
+    image: clickhouse/clickhouse-server:23.4.2
     container_name: clickhouse
     environment:
       CLICKHOUSE_USER: default
