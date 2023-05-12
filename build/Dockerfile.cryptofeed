@@ -1,10 +1,6 @@
 FROM python:3.8-bullseye
 ENV IS_DOCKER True
 
-# add wait-for-it
-COPY /build/wait-for-it.sh /wait-for-it.sh
-RUN chmod +x wait-for-it.sh
-
 # add default packages
 COPY ./requirements.txt /requirements.txt
 RUN pip3 install -r ./requirements.txt
@@ -15,4 +11,4 @@ COPY ./src /src
 RUN pip3 install .
 
 RUN chmod +x ./src/script/cryptofeed_0_startup.sh
-CMD ["/wait-for-it.sh", "redpanda:29092", "--", "/src/script/cryptofeed_0_startup.sh"]
+CMD ["/src/script/cryptofeed_0_startup.sh"]

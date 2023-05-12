@@ -3,7 +3,3 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONPATH “${PYTHONPATH}:/data/storage/notebooks
 
 RUN pip3 install clickhouse-connect==0.5.22
-
-# add wait-for-it
-COPY /build/wait-for-it.sh /wait-for-it.sh
-RUN chmod +x wait-for-it.sh

@@ -21,6 +21,10 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:9644/v1/status/ready"]
+      start_period: 5s
+      interval: 3s
     networks:
       - ch_ntw
 
@@ -38,8 +42,10 @@ services:
       - ./data/deephaven:/data/storage
       - ./data/parquet:/data/parquet
     depends_on:
-      - redpanda
-      - clickhouse
+      redpanda:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
     networks:
       - ch_ntw
 
@@ -55,6 +61,10 @@ services:
       - ./data/clickhouse:/var/lib/clickhouse
       - ./build/init_trades.sql:/docker-entrypoint-initdb.d/init_trades.sql:ro
       - ./build/init_orderbooks.sql:/docker-entrypoint-initdb.d/init_orderbook.sql:ro
+    healthcheck:
+      test: ["CMD", "wget", "--tries=1", "--spider", "-q", "localhost:8123/ping"]
+      start_period: 5s
+      interval: 3s
     networks:
         - ch_ntw
 
@@ -64,7 +74,8 @@ services:
       context: .
       dockerfile: build/Dockerfile.cryptofeed
     depends_on:
-      - redpanda
+      redpanda:
+        condition: service_healthy
     networks:
       - ch_ntw
 

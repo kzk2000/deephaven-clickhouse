@@ -10,7 +10,10 @@ This repo shows how to
 * build a Deephaven app mode around it
 
 ## General Setup 
-Everything should "just work", simply run ```docker-compose up -d``` (ideally let it run 24/7 on a server)
+Everything should "just work", simply run this and wait until all 4 containers start up:<br>
+```
+docker-compose up -d
+```
 * Deephaven UI is running at http://localhost:10000/ide/
 * ClickHouse Play is running at http://localhost:8123/play
   * CLICKHOUSE_USER: default
