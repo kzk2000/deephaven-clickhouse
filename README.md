@@ -10,7 +10,7 @@ This repo shows how to
 * build a Deephaven app mode around it
 
 ## General Setup 
-Everything should "just work", simply run this and wait until all 4 containers start up:<br>
+Everything should "just work", simply run this and wait until all 5 containers start up:<br>
 ```
 docker-compose up -d
 ```
@@ -18,6 +18,7 @@ docker-compose up -d
 * ClickHouse Play is running at http://localhost:8123/play
   * CLICKHOUSE_USER: default
   * CLICKHOUSE_PASSWORD: password
+* Redpanda Console is running at http://localhost:8080/overview
 
 * Data is stored locally under the `/data/[deephaven|clickhouse]` folders which are mounted into the docker images
 
