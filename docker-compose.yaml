@@ -2,8 +2,8 @@ version: '3'
 
 services:
   redpanda:
-    image: docker.redpanda.com/redpandadata/redpanda:v23.1.8
     container_name: redpanda
+    image: docker.redpanda.com/redpandadata/redpanda:v23.1.8
     command:
       - redpanda
       - start
@@ -46,7 +46,7 @@ services:
   deephaven:
     container_name: deephaven
     build:
-      context: deephaven
+      context: docker/deephaven
     environment:
       START_OPTS: -Xmx24g -Dio.deephaven.app.GcApplication.enabled=true
     ports:
@@ -63,8 +63,8 @@ services:
       - ch_ntw
 
   clickhouse:
-    image: clickhouse/clickhouse-server:23.4.2
     container_name: clickhouse
+    image: clickhouse/clickhouse-server:23.4.2
     environment:
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: password
@@ -72,8 +72,8 @@ services:
       - "8123:8123"
     volumes:
       - ./data/clickhouse:/var/lib/clickhouse
-      - ./build/init_trades.sql:/docker-entrypoint-initdb.d/init_trades.sql:ro
-      - ./build/init_orderbooks.sql:/docker-entrypoint-initdb.d/init_orderbook.sql:ro
+      - ./docker/clickhouse/sql/init_trades.sql:/docker-entrypoint-initdb.d/init_trades.sql:ro
+      - ./docker/clickhouse/sql/init_orderbooks.sql:/docker-entrypoint-initdb.d/init_orderbook.sql:ro
     healthcheck:
       test: ["CMD", "wget", "--tries=1", "--spider", "-q", "localhost:8123/ping"]
       start_period: 5s
@@ -84,7 +84,7 @@ services:
   cryptofeed:
     container_name: cryptofeed
     build:
-      context: cryptofeed
+      context: docker/cryptofeed
     depends_on:
       redpanda:
         condition: service_healthy

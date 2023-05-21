@@ -1,6 +1,6 @@
 FROM ghcr.io/deephaven/server:0.24.1
 ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONPATH “${PYTHONPATH}:/data/storage/notebooks
+ENV PYTHONPATH "${PYTHONPATH}:/data/storage/notebooks"
 
 RUN pip3 install clickhouse-connect==0.5.22
 

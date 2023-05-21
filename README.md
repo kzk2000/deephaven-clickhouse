@@ -24,29 +24,19 @@ docker-compose up -d
 
 ## Project structure
 ```
-├── build                               <- Docker build and startup scripts 
-│   ├── Dockerfile.cryptofeed               <- Dockerfile for Cryptofeed subscriptions
-│   ├── Dockerfile.deephaven                <- Dockerfile for Deephaven server
-│   ├── init_orderbooks.sql                 <- init script to create cryptfeed.trades* tables
-│   ├── init_trades.sql                     <- init script to create cryptfeed.orderbooks* tables
-│   └── wait-for-it.sh                      <- helper to wait for host:port service to be ready
-│
 ├── data                                <- Project data
 │   ├── clickhouse                          <- volume mount for the 'clickhouse' container
 │   └── deephaven                           <- volume mount for the 'deephaven' container
-│       ├── app.d                           <- Deephaven app mode config
-│       ├── layouts                         <- Deephaven app layout 
-│       └── notebooks                       <- Deephaven File Explorer 
-│   
-├── src                                 <- Python files
-│   ├── script    
-│   │   ├── cryptofeed_0_startup.sh         <- startup script for the 'cryptofeed' container
-│   │   ├── cryptofeed_1_trades.py          <- script for trades subcriptions
-│   │   └── cryptofeed_2_orderbooks.py      <- script for orderbook subcriptions
-│   │ 
-│   └── cryptofeed_tools.py             <- wrappers for Cryptofeed APIs
+│       ├── layouts                         <- contains .json file for Deephaven app layout 
+│       └── notebooks                       <- Deephaven File Explorer, all DH python scripts are stored here
+│
+├── docker                               <- anything needed for Docker builds 
+│   ├── clickhouse                          <- build files for ClickHouse                               
+│   ├── cryptofeed                          <- build files for Cryptofeed 
+│   └── deephaven                           <- build files for Deephaven
 │
 ├── .gitignore                          <- List of files ignored by git
+├── docker-compose.yaml                 <- docker-compose file to start up everything
 ├── requirements.txt                    <- File for installing python dependencies
 ├── setup.py                            <- File for installing project as a package
 └── README.md
