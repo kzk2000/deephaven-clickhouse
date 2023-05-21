@@ -46,11 +46,9 @@ services:
   deephaven:
     container_name: deephaven
     build:
-      context: .
-      dockerfile: build/Dockerfile.deephaven
+      context: deephaven
     environment:
-      JAVA_OPTS: -Xmx24g -Dio.deephaven.app.GcApplication.enabled=true -Ddeephaven.application.dir=/data/storage/app.d
-      START_OPS: -Ddeephaven.console.type=python
+      START_OPTS: -Xmx24g -Dio.deephaven.app.GcApplication.enabled=true
     ports:
       - "10000:10000"
     volumes:
@@ -86,8 +84,7 @@ services:
   cryptofeed:
     container_name: cryptofeed
     build:
-      context: .
-      dockerfile: build/Dockerfile.cryptofeed
+      context: cryptofeed
     depends_on:
       redpanda:
         condition: service_healthy
