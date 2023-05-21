@@ -35,7 +35,7 @@ trades_kafka.j_table.awaitUpdate()  # this waits for at least 1 tick before we c
 query_history = f"""
   SELECT *, toInt64(1) as is_db FROM cryptofeed.trades
   WHERE 
-    ts >= now() - INTERVAL 3 HOUR
+    ts >= now() - INTERVAL 10 MINUTE
     AND ts <= '{tools.get_first_ts(trades_kafka)}'
   ORDER BY ts ASC
 """
@@ -49,17 +49,16 @@ trades = tools.make_ring(trades_stream, 20000) \
     .drop_columns(['KafkaOffset']) \
     .sort(['ts'])
 
-# snap = trades_ring.snapshot()  # for testing is_db switch from 0 to 1
+# snap = trades.snapshot()  # for testing is_db switch from 0 to 1
 
 tick_count_by_exch = trades.agg_by(agg.count_('count'), by=['symbol', 'exchange'])
 
 last_trade = trades.last_by(['symbol']).sort(['symbol'])
 
 
-# set up chart that's connected via Linker
+# set up a chart that's connected via Linker
 toc = one_click(trades, by=['symbol'])
 
-# NOTE: this only works with InputFilter, still not sure how to attach it to Linker filters
 plot_toc = Figure()\
   .plot_xy(series_name="TRD", t=toc, x="ts", y="price")\
   .show()
