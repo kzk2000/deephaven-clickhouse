@@ -16,8 +16,8 @@ trades_kafka = ck.consume(
     'trades',
     key_spec=ck.KeyValueSpec.IGNORE,
     value_spec=ck.json_spec([
-        ('ts', dht.DateTime),
-        ('receipt_ts', dht.DateTime),
+        ('ts', dht.Instant),
+        ('receipt_ts', dht.Instant),
         ('symbol', dht.string),
         ('exchange', dht.string),
         ('side', dht.string),
@@ -34,14 +34,14 @@ trades_kafka.j_table.awaitUpdate()  # this waits for at least 1 tick before we c
 # historical ticks from ClickHouse
 query_history = f"""
   SELECT *, toInt64(1) as is_db FROM cryptofeed.trades
-  WHERE 
+  WHERE
     ts >= now() - INTERVAL 10 MINUTE
     AND ts <= '{tools.get_first_ts(trades_kafka)}'
   ORDER BY ts ASC
 """
 trades_clickhouse = tools.query_clickhouse(query_history)
 
-# merge history (ClickHouse) + latest (Kafka) into one table, 
+# merge history (ClickHouse) + latest (Kafka) into one table,
 # the .last_by(['symbol', 'exchange', 'ts', 'KafkaOffset']) ensures no dups after stitching
 trades_stream = merge([trades_clickhouse, trades_kafka])
 trades = tools.make_ring(trades_stream, 20000) \
