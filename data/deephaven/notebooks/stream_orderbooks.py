@@ -22,11 +22,11 @@ orderbooks = ck.consume(
   value_spec=ck.json_spec([
     ('exchange', dht.string),
     ('symbol', dht.string),
-    ('ts', dht.DateTime),
+    ('ts', dht.Instant),
     ('bid', dht.string),  # json as string
     ('ask', dht.string),  # json as string
   ]),
-  table_type=ck.TableType.stream())\
+  table_type=ck.TableType.blink())\
   .update_view([
     #'is_db = (long) 0',
     'ts_bin = lowerBin(ts, SECOND)',

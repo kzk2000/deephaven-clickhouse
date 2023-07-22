@@ -16,7 +16,7 @@ y1_pct_formulas = [f"Y1_{x} = 0.{x} * Y1" for x in range(9, 0, -1)]
 y2_pct_formulas = [f"Y2_{x} = 0.{x} * Y2" for x in range(9, 0, -1)]
 
 # source = empty_table(3142).update(math_formulas + y1_pct_formulas + y2_pct_formulas)
-source = time_table("00:00:00.10").update(math_formulas + y1_pct_formulas + y2_pct_formulas).tail(1000)
+source = time_table("PT0:00:00.25").update(math_formulas + y1_pct_formulas + y2_pct_formulas).tail(1000)
 
 
 
