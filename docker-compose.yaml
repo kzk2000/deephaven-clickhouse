@@ -73,10 +73,10 @@ services:
     volumes:
       - ./data/clickhouse:/var/lib/clickhouse
       - ./docker/clickhouse/sql/init_trades.sql:/docker-entrypoint-initdb.d/init_trades.sql:ro
-      - ./docker/clickhouse/sql/init_orderbooks.sql:/docker-entrypoint-initdb.d/init_orderbook.sql:ro
+      - ./docker/clickhouse/sql/init_orderbooks.sql:/docker-entrypoint-initdb.d/init_orderbooks.sql:ro
     healthcheck:
-      test: ["CMD", "wget", "--tries=5", "--spider", "-q", "localhost:8123/ping"]
-      start_period: 5s
+      test: ["CMD", "wget", "--tries=3", "--spider", "-q", "localhost:8123/ping"]
+      start_period: 10s
       interval: 3s
     networks:
         - ch_ntw
