@@ -13,7 +13,7 @@ This repo shows how to
 Everything should "just work", simply run this and wait until all 5 containers start up:<br>
 ```
 docker-compose build --no-cache
-docker-compose up -d
+docker-compose up -d  
 ```
 * Deephaven UI is running at http://localhost:10000/ide/
 * ClickHouse Play is running at http://localhost:8123/play
