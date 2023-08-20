@@ -91,6 +91,16 @@ services:
     networks:
       - ch_ntw
 
+  polygon:
+    container_name: polygon 
+    build:
+      context: docker/polygon
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    networks:
+      - ch_ntw
+
 networks:
   ch_ntw:
     driver: bridge
