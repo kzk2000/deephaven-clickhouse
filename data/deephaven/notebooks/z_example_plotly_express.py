@@ -1,9 +1,23 @@
 from deephaven.column import int_col, string_col
 import deephaven.plot.express as dx
-from deephaven import new_table
+from deephaven import new_table, agg
 
 # bar chart
-fig_bar = dx.bar(table=last_trade, x="symbol", y="size")
+#fig_bar = dx.bar(table=last_trade, x="symbol", y="size")
+
+agg_list = [
+    agg.sum_("volume = size"),
+]
+
+gg = trades.agg_by(agg_list, by= ['exchange', 'side']).snapshot()
+
+fig_sunburst = dx.sunburst(
+    gg,
+    names='side',
+    parents='exchange',
+    values='volume',
+)
+
 
 # sunburst example
 data = new_table([

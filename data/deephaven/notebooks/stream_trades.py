@@ -10,8 +10,8 @@ from deephaven.plot import PlotStyle
 from deephaven.plot.figure import Figure
 from deephaven.plot.selectable_dataset import one_click
 
-# latest from Kafka (init as ring table to hold latest ticks in memory until the 'final_ring' is created below)
-trades_kafka = ck.consume(
+# latest from Kafka (blink table)
+trades_blink = ck.consume(
     {'bootstrap.servers': 'redpanda:29092'},
     'trades',
     key_spec=ck.KeyValueSpec.IGNORE,
@@ -25,10 +25,12 @@ trades_kafka = ck.consume(
         ('price', dht.double),
         ('trade_id', dht.int_),
     ]),
-    table_type=ck.TableType.ring(10000)) \
-    .drop_columns(['KafkaPartition', 'KafkaTimestamp']) \
-    .update_view('is_db = (long) 0')
+    table_type=ck.TableType.blink()
+) \
+.drop_columns(['KafkaPartition', 'KafkaTimestamp']) \
+.update_view('is_db = (long) 0')
 
+trades_kafka = tools.blink_tail_by(trades_blink, 5000, by=['symbol'])
 trades_kafka.j_table.awaitUpdate()  # this waits for at least 1 tick before we continue below this line
 
 # historical ticks from ClickHouse
@@ -36,25 +38,16 @@ query_history = f"""
   SELECT *, toInt64(1) as is_db FROM cryptofeed.trades
   WHERE
     ts >= now() - INTERVAL 10 MINUTE
-    AND ts <= '{tools.get_first_ts(trades_kafka)}'
+    AND ts < '{tools.get_first_ts(trades_kafka)}'
   ORDER BY ts ASC
 """
 trades_clickhouse = tools.query_clickhouse(query_history)
 
-# merge history (ClickHouse) + latest (Kafka) into one table,
-# the .last_by(['symbol', 'exchange', 'ts', 'KafkaOffset']) ensures no dups after stitching
-trades_stream = merge([trades_clickhouse, trades_kafka])
-trades = tools.make_ring(trades_stream, 20000) \
-    .last_by(['symbol', 'exchange', 'ts', 'KafkaOffset']) \
-    .drop_columns(['KafkaOffset']) \
-    .sort(['ts'])
+trades = merge([trades_clickhouse, trades_kafka]).drop_columns(['KafkaOffset', 'receipt_ts'])
 
-# snap = trades.snapshot()  # for testing is_db switch from 0 to 1
-
+# some summay stats
 tick_count_by_exch = trades.agg_by(agg.count_('count'), by=['symbol', 'exchange'])
-
 last_trade = trades.last_by(['symbol']).sort(['symbol'])
-
 
 # set up a chart that's connected via Linker
 toc = one_click(trades, by=['symbol'])

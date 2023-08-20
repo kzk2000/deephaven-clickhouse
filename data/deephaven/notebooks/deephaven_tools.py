@@ -1,24 +1,36 @@
 import clickhouse_connect
-import deephaven.pandas as dhpd
-import deephaven
 import json
 import jpy
 import numpy as np
-from deephaven.table import Table
+from typing import List, Union
+
+import deephaven
+import deephaven.pandas as dhpd
 from deephaven import agg, merge
+from deephaven.table import Table
+from deephaven.table_factory import ring_table
+
 
 JRingTableTools = jpy.get_type('io.deephaven.engine.table.impl.sources.ring.RingTableTools')
 JsonNode = deephaven.dtypes.DType('com.fasterxml.jackson.databind.JsonNode')
 
+def blink_tail_by(blink_table: Table, num_rows: int, by: Union[str, List[str]]) -> Table:
+    """
+    Transform blink_table to ring_table that keeps num_rows by <group>
+    Workaround as suggested in https://github.com/deephaven/deephaven-core/issues/4309
+    
+    """
+    return (
+        blink_table.without_attributes(["BlinkTable"])
+        .partitioned_agg_by(aggs=[], by=by, preserve_empty=True)
+        .transform(lambda t: ring_table(t, num_rows))
+        .merge()
+    )
 
 def get_first_ts(ticking_table):
     first_ts = ticking_table.agg_by([agg.min_('ts')])
     first_ts_py = dhpd.to_pandas(first_ts).iloc[0, 0]   
     return first_ts_py
-
-
-def make_ring(t: Table, size: int) -> Table:
-    return Table(j_table=JRingTableTools.of(t.j_table, size))
 
 
 def query_clickhouse(query):
@@ -68,9 +80,9 @@ def get_candles(symbols: list, n_rows=100, freq='5 minute'):
         min(price)                                              AS lowp,
         argMax(price, ts)                                       AS closep,
         sum(price*size) / sum(size)                             AS vwap,
-    --  avg(closep) OVER (PARTITION BY symbol ORDER BY ts ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING) AS prev_closep
+        -- avg(closep) OVER (PARTITION BY symbol ORDER BY ts ROWS BETWEEN 1 PRECEDING AND 1 PRECEDING) AS prev_closep
         closep/openp - 1                                        AS ret_o2c,
-        --closep/prev_closep - 1                                AS ret c2c,
+        -- closep/prev_closep - 1                                AS ret c2c,
         sum(size)                                               AS volume,
         sum(if(side='buy', size, 0))                            AS volume_buys,
         sum(if(side!='buy', size, 0))                           AS volume_sells,

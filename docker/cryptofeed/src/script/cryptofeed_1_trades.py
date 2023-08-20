@@ -1,7 +1,7 @@
 import os
 from cryptofeed import FeedHandler
 from cryptofeed.defines import TRADES
-from cryptofeed.exchanges import Coinbase, Bitstamp
+from cryptofeed.exchanges import Coinbase, Bitstamp, Kraken
 
 import src.cryptofeed_tools as cft
 
@@ -19,9 +19,17 @@ def main():
     f.add_feed(Coinbase(channels=[TRADES],
                         symbols=cft.SYMBOLS,
                         callbacks={TRADES: [ch_tradekafka, cft.my_print]}))
+
+    f.add_feed(Bitstamp(channels=[TRADES],
+                        symbols=cft.SYMBOLS,
+                        callbacks={TRADES: [ch_tradekafka, cft.my_print]}))
+
+    f.add_feed(Kraken(channels=[TRADES],
+                      symbols=cft.SYMBOLS,
+                      callbacks={TRADES: [ch_tradekafka, cft.my_print]}))
+
     f.run()
 
 
 if __name__ == '__main__':
     main()
-
