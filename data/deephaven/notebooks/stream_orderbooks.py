@@ -11,9 +11,6 @@ from deephaven import agg, merge, ring_table
 from deephaven.plot import LineEndStyle, LineJoinStyle, LineStyle, Colors, PlotStyle, Color
 from deephaven.plot.figure import Figure
 from deephaven.table import Table
-from deephaven.time import second_of_day, time_zone, minute_of_day
-
-
 import deephaven_tools as tools
 
 
