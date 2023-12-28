@@ -97,8 +97,8 @@ quotes_l1 = orderbooks_sampled.select([
 ])
 
 # not-so-well documented trick to do as-of joins via partitions; must drop 'symbol' from one of them to avoid "conflicing columns error" for partitioned_transform() line
-trades_partitioned = trades.partition_by(['symbol', 'exchange'])
-quotes_partitioned = quotes_l1.partition_by(['symbol', 'exchange']).transform(lambda t: t.drop_columns(['symbol', 'exchange']))
+trades_partitioned = trades.partition_by(['symbol'])
+quotes_partitioned = quotes_l1.partition_by(['symbol']).transform(lambda t: t.drop_columns(['symbol', 'exchange']))
 
 trades_and_quotes = trades_partitioned.partitioned_transform(quotes_partitioned, lambda t, q: t.aj(q, on=['ts'])).merge().sort(['ts'])
 
