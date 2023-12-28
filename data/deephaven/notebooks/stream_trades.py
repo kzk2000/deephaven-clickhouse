@@ -1,14 +1,10 @@
-import clickhouse_connect
 import deephaven.dtypes as dht
-import deephaven.pandas as dhpd
 import deephaven.stream.kafka.consumer as ck
-import deephaven_tools as tools
-import jpy
 from deephaven import agg, merge
-from deephaven.table import Table
-from deephaven.plot import PlotStyle
 from deephaven.plot.figure import Figure
 from deephaven.plot.selectable_dataset import one_click
+
+import deephaven_tools as tools
 
 # latest from Kafka (blink table)
 trades_blink = ck.consume(
@@ -26,8 +22,8 @@ trades_blink = ck.consume(
         ('trade_id', dht.int_),
     ]),
     table_type=ck.TableType.blink()
-) \
-.drop_columns(['KafkaPartition', 'KafkaTimestamp']) \
+)\
+.drop_columns(['KafkaPartition', 'KafkaTimestamp'])\
 .update_view('is_db = (long) 0')
 
 trades_kafka = tools.blink_tail_by(trades_blink, 5000, by=['symbol'])
@@ -52,8 +48,6 @@ last_trade = trades.last_by(['symbol']).sort(['symbol'])
 # set up a chart that's connected via Linker
 toc = one_click(trades, by=['symbol'])
 
-plot_toc = Figure()\
-  .plot_xy(series_name="TRD", t=toc, x="ts", y="price")\
-  .show()
-
-
+plot_toc = Figure() \
+    .plot_xy(series_name="TRD", t=toc, x="ts", y="price") \
+    .show()

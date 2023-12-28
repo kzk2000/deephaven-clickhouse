@@ -64,7 +64,7 @@ services:
 
   clickhouse:
     container_name: clickhouse
-    image: clickhouse/clickhouse-server:23.3.13.6
+    image: clickhouse/clickhouse-server:23.11.3.23
     environment:
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: password

@@ -1,18 +1,16 @@
 import clickhouse_connect
-import json
-import jpy
-import numpy as np
-from typing import List, Union
-
 import deephaven
-import deephaven.pandas as dhpd
-from deephaven import agg, merge
+import deephaven.arrow as dhpa
+import deephaven.numpy as dhnp
+import jpy
+from deephaven import agg
 from deephaven.table import Table
 from deephaven.table_factory import ring_table
-
+from typing import List, Union
 
 JRingTableTools = jpy.get_type('io.deephaven.engine.table.impl.sources.ring.RingTableTools')
 JsonNode = deephaven.dtypes.DType('com.fasterxml.jackson.databind.JsonNode')
+
 
 def blink_tail_by(blink_table: Table, num_rows: int, by: Union[str, List[str]]) -> Table:
     """
@@ -27,15 +25,16 @@ def blink_tail_by(blink_table: Table, num_rows: int, by: Union[str, List[str]]) 
         .merge()
     )
 
+
 def get_first_ts(ticking_table):
     first_ts = ticking_table.agg_by([agg.min_('ts')])
-    first_ts_py = dhpd.to_pandas(first_ts).iloc[0, 0]   
+    first_ts_py = dhnp.to_numpy(first_ts)[0,0]
     return first_ts_py
 
 
 def query_clickhouse(query):
     with clickhouse_connect.get_client(host='clickhouse', username='default', password='password', port=8123) as client:
-        return dhpd.to_table(client.query_df(query))
+        return dhpa.to_table(client.query_arrow(query))
 
 
 def query_clickhouse_df(query):

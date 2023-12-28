@@ -15,6 +15,7 @@ zzz_private
 *.tar
 *.mo
 *.log
+trials_*.py
 
 
 
