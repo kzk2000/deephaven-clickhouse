@@ -5,7 +5,7 @@ FROM ghcr.io/deephaven/server:0.31.0
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONPATH "${PYTHONPATH}:/data/storage/notebooks"
 
-RUN pip install --no-cache-dir clickhouse-connect websockets
+RUN pip install --no-cache-dir clickhouse-connect websockets orjson
 RUN pip install --no-cache-dir deephaven-plugin-plotly deephaven-plugin-plotly-express deephaven-plugin-matplotlib seaborn
 COPY --from=js-plugins js-plugins/ /opt/deephaven/config/js-plugins/
 

@@ -45,9 +45,12 @@ trades = merge([trades_clickhouse, trades_kafka]).drop_columns(['KafkaOffset', '
 tick_count_by_exch = trades.agg_by(agg.count_('count'), by=['symbol', 'exchange'])
 last_trade = trades.last_by(['symbol']).sort(['symbol'])
 
+# FIXME: uncomment this for now to not block startup
 # set up a chart that's connected via Linker
-toc = one_click(trades, by=['symbol'])
+# toc = one_click(trades, by=['symbol'])
 
-plot_toc = Figure() \
-    .plot_xy(series_name="TRD", t=toc, x="ts", y="price") \
-    .show()
+# plot_toc = Figure() \
+#     .plot_xy(series_name="TRD", t=toc, x="ts", y="price") \
+#     .show()
+
+

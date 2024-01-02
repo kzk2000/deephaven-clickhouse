@@ -44,8 +44,7 @@ def query_clickhouse_df(query):
 
 def get_partitions(org_table, partition_by: str):
     partitioned_table = org_table.partition_by([partition_by])
-    keys_table = partitioned_table.table.select_distinct(
-        partitioned_table.key_columns)  # a 1 column DH table of unique keys
+    keys_table = partitioned_table.table.select_distinct(partitioned_table.key_columns)  # a 1 column DH table of unique keys
     iterator = keys_table.j_object.columnIterator(partition_by)  # this is a Java iterator
     keys_list = []
     while iterator.hasNext():

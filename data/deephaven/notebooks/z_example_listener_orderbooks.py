@@ -79,7 +79,7 @@ def listener_function(update, is_replay):
             )
         )        
      
-table = time_table("PT00:00:02").update("json_str=generate_snapshot()").tail(5)
+table = time_table("PT00:00:02").update("json_str=generate_snapshot()").tail(5)  # FIXME: this is bad practice and won't scale well
 handle = listen(table, listener_function)
 
 my_ring_table = blink_tail_by(my_blink_table,1, by=['symbol', 'side'])\
