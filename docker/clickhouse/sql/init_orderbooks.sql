@@ -20,9 +20,8 @@ CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks
     , ask           Map(String, Float64)
     , KafkaOffset   Int64
 ) Engine = MergeTree
+PARTITION BY toYYYYMM(ts)
 ORDER BY (symbol, ts)
-PRIMARY KEY (symbol, ts)
-PARTITION BY (symbol, toStartOfHour(ts));
 
 -- create Kafka table engine, flush every 1000ms
 CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks_queue

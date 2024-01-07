@@ -63,9 +63,10 @@ class ClickHouseTradeKafka(KafkaCallback):
             data['receipt_ts'] = int(data.pop('receipt_timestamp') * 1_000_000_000)
             data['size'] = data.pop('amount')
             data['trade_id'] = data.pop('id')
-            data.pop('type')
-            await self.producer.send_and_wait(self.topic, orjson.dumps(data).encode('utf-8'))
+            del data['type']
+            await self.producer.send_and_wait(self.topic, orjson.dumps(data))   # orjson uses UTF-8 encoding by default
         except:
+            print("WARNING: ClickHouseTradeKafka.write() didn't fire - go check!")
             pass
 
 
@@ -74,11 +75,14 @@ class ClickHouseBookKafka(KafkaCallback):
 
     async def write(self, data: dict):
         await self._KafkaCallback__connect()
-
-        data['ts'] = int(data.pop('timestamp') * 1_000_000_000)
-        data['receipt_ts'] = int(data.pop('receipt_timestamp') * 1_000_000_000)
-        data['bid'] = OrderedDict(sorted(data['book'].pop('bid').items(), reverse=True))
-        data['ask'] = OrderedDict(sorted(data['book'].pop('ask').items()))
-        del data['book']
-        del data['delta']
-        await self.producer.send_and_wait(self.topic, orjson.dumps(data, option=orjson.OPT_NON_STR_KEYS))  # orjson uses UTF-8 encoding by default
+        try:
+            data['ts'] = int(data.pop('timestamp') * 1_000_000_000)
+            data['receipt_ts'] = int(data.pop('receipt_timestamp') * 1_000_000_000)
+            data['bid'] = OrderedDict(sorted(data['book'].pop('bid').items(), reverse=True))
+            data['ask'] = OrderedDict(sorted(data['book'].pop('ask').items()))
+            del data['book']
+            del data['delta']
+            await self.producer.send_and_wait(self.topic, orjson.dumps(data, option=orjson.OPT_NON_STR_KEYS))  # orjson uses UTF-8 encoding by default
+        except:
+            print("WARNING: ClickHouseBookKafka.write() didn't fire - go check!")
+            pass

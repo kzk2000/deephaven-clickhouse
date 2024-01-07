@@ -156,44 +156,47 @@ orderbooks_curated = get_orderbooks_curated()
 ##############################################################################################################################
 # plot a few things
 
+orderbook_one_symbol = orderbooks_curated.where(["symbol == `BTC-USD`"]).tail(100).sort(['ts_bin'])
+
 slippage_100k = dx.line(
-    orderbooks_curated.where(["symbol == `BTC-USD`"]).tail(50),
+    orderbook_one_symbol,
     x="ts_bin", 
     y=["bid_slippage_100k", "ask_slippage_100k"],
-    color_discrete_sequence=["red", "lightgreen"],
+    color_discrete_sequence=["red", "lightgreen", "lightblue"],
     line_shape = 'hv',
     size_sequence=8,
     title="BTC-USD: Slippage for $100k",
     xaxis_titles = '',
-    yaxis_titles = 'Slippage (bps)',    
+    yaxis_titles = 'Slippage (bps)',
+    by=["exchange"],
 )
 
 
 spreads_100k = dx.line(
-    orderbooks_curated.where(["symbol == `BTC-USD`"]).tail(150), 
+    orderbook_one_symbol, 
     x="ts_bin", 
     y=["spread_100k_bps"],
-    color_discrete_sequence=["red", "lightgreen"],
+    color_discrete_sequence=["red", "lightgreen", "lightblue"],
     line_shape = 'hv',
     size_sequence=8,
     title="Round-trip cost for $100k",
     xaxis_titles = '',
     yaxis_titles = 'Slippage (bps)',  
-    by=['exchange', 'symbol']  
+    by=['exchange', 'symbol'],
 )
 
 
 prices = dx.line(
-    orderbooks_curated.where(["symbol == `BTC-USD`"]).tail(150), 
+    orderbook_one_symbol, 
     x="ts_bin", 
     y=["best_ask"],
-    color_discrete_sequence=["red", "lightgreen"],
+    color_discrete_sequence=["red", "lightgreen", "lightblue"],
     line_shape = 'hv',
     size_sequence=8,
     title="Mid-price by Exchange",
     xaxis_titles = '',
     yaxis_titles = 'Slippage (bps)',  
-    by=['exchange', 'symbol']  
+    by=['exchange', 'symbol'],
 )
 
 

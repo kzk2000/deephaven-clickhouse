@@ -21,10 +21,8 @@ CREATE TABLE IF NOT EXISTS cryptofeed.trades
     trade_id Int64,
     KafkaOffset Int64
 ) ENGINE = MergeTree
+PARTITION BY toYYYYMM(ts)
 ORDER BY (symbol, ts)
-PRIMARY KEY (symbol, ts)
-PARTITION BY (symbol, toStartOfHour(ts));
-
 
 -- create trades Kafka table engine, flush every 1000ms
 CREATE TABLE IF NOT EXISTS cryptofeed.trades_queue
