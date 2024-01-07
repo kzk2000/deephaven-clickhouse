@@ -1,12 +1,15 @@
 from cryptofeed import FeedHandler
 from cryptofeed.defines import L2_BOOK
-from cryptofeed.exchanges import Coinbase, Kraken
+from cryptofeed.exchanges import Coinbase, Kraken, Bitstamp
 
 import src.cryptofeed_tools as cft
 import os
 
 
 def main():
+    # see docker_files/Dockerfile.cryptofeed where we set IS_DOCKER=True
+    # by doing this here, we can also run this script locally
+    # see https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/#scenario-4
     kakfa_bootstrap = 'redpanda' if os.environ.get('IS_DOCKER') else 'localhost'
     kakfa_port = 29092 if os.environ.get('IS_DOCKER') else 9092
 
@@ -15,8 +18,12 @@ def main():
 
     callbacks = {L2_BOOK: [ch_book_kafka, cft.my_print]}
 
+    # cft.SYMBOLS = ['BTC-USD']   # for testing
+
     f = FeedHandler()
-    f.add_feed(Kraken(max_depth=10, channels=[L2_BOOK], symbols=cft.SYMBOLS, callbacks=callbacks))
+    f.add_feed(Coinbase(max_depth=2000, channels=[L2_BOOK], symbols=cft.SYMBOLS, callbacks=callbacks))
+    f.add_feed(Bitstamp(channels=[L2_BOOK], symbols=cft.SYMBOLS, callbacks=callbacks))
+    f.add_feed(Kraken(channels=[L2_BOOK], symbols=cft.SYMBOLS, callbacks=callbacks))
     f.run()
 
 

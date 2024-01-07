@@ -39,9 +39,10 @@ def parse_book_curated(book_str: str, max_levels: int = 200):
 
     and compute EXACT fill prices for order_sizes_to_execute = [1e3, 10e3, 100e3, 250e3] 
     """
+
     order_book = orjson.loads(book_str)
 
-    vals = [(float(price_str), size, float(price_str) * size) for i, (price_str, size) in enumerate(order_book.items()) if i < max_levels]
+    vals = [(float(price_str), size, float(price_str) * size) for i, (price_str, size) in enumerate(order_book.items())]
     prices, sizes, quote_sizes = [np.array(x) for x in zip(*vals)]
     cum_quote_sizes = np.insert(np.cumsum(quote_sizes), 0, 0)  # add leading [0] here, so we can use np.diff() equivalent logic below
 
@@ -66,7 +67,7 @@ def convert_sampled_to_curated(orderbooks_sampled):
     
     """
 
-    # orderbooks_sampled = orderbooks_sampled.tail(10).snapshot()  # useful for prototyping
+    # orderbooks_sampled = orderbooks_sampled.tail(10).snapshot()  # useful for prototyping - DON'T FORGET to comment when done!
 
     # BID
     bid_curated = orderbooks_sampled.select([

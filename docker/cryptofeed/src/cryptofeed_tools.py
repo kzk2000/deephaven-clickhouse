@@ -1,22 +1,10 @@
 import asyncio
+from collections import OrderedDict
+
+import orjson
 from aiokafka import AIOKafkaProducer
-from cryptofeed.backends.kafka import BookKafka
-from yapic import json
 
 SYMBOLS = ['BTC-USD', 'ETH-USD', 'AVAX-USD', 'SOL-USD']
-
-
-class ClickHouseBookKafka(BookKafka):
-    topic = 'orderbooks'
-
-    async def write(self, data: dict):
-        await self._KafkaCallback__connect()
-        data['ts'] = int(data.pop('timestamp') * 1_000_000_000)
-        data['receipt_ts'] = int(data.pop('receipt_timestamp') * 1_000_000_000)
-        data['bid'] = data['book'].pop('bid')
-        data['ask'] = data['book'].pop('ask')
-        del data['book']
-        await self.producer.send_and_wait(self.topic, json.dumps(data).encode('utf-8'))
 
 
 async def my_print(data, _receipt_time):
@@ -41,24 +29,6 @@ class KafkaCallback:
         self.numeric_type = numeric_type
         self.none_to = none_to
 
-    async def __connect(self):
-        if not self.producer:
-            loop = asyncio.get_event_loop()
-            self.producer = AIOKafkaProducer(acks=0,
-                                             loop=loop,
-                                             bootstrap_servers=f'{self.bootstrap}:{self.port}' if isinstance(
-                                                 self.bootstrap, str) else self.bootstrap,
-                                             client_id='cryptofeed')
-            await self.producer.start()
-
-    async def write(self, data: dict):
-        await self._connect()
-        await self.producer.send_and_wait(self.topic, json.dumps(data).encode('utf-8'))
-
-
-class ClickHouseTradeKafka(KafkaCallback):
-    default_topic = 'trades'
-
     async def __call__(self, dtype, receipt_timestamp: float):
         if isinstance(dtype, dict):
             data = dtype
@@ -69,6 +39,23 @@ class ClickHouseTradeKafka(KafkaCallback):
             data['receipt_timestamp'] = receipt_timestamp
         await self.write(data)
 
+    async def __connect(self):
+        if not self.producer:
+            loop = asyncio.get_event_loop()
+            self.producer = AIOKafkaProducer(acks=0,
+                                             loop=loop,
+                                             bootstrap_servers=f'{self.bootstrap}:{self.port}' if isinstance(self.bootstrap, str) else self.bootstrap,
+                                             client_id='cryptofeed')
+            await self.producer.start()
+
+    async def write(self, data: dict):
+        await self.__connect()
+        await self.producer.send_and_wait(self.topic, orjson.dumps(data).encode('utf-8'))
+
+
+class ClickHouseTradeKafka(KafkaCallback):
+    default_topic = 'trades'
+
     async def write(self, data: dict):
         await self._KafkaCallback__connect()
         try:
@@ -77,7 +64,21 @@ class ClickHouseTradeKafka(KafkaCallback):
             data['size'] = data.pop('amount')
             data['trade_id'] = data.pop('id')
             data.pop('type')
+            await self.producer.send_and_wait(self.topic, orjson.dumps(data).encode('utf-8'))
         except:
             pass
 
-        await self.producer.send_and_wait(self.topic, json.dumps(data).encode('utf-8'))
+
+class ClickHouseBookKafka(KafkaCallback):
+    default_topic = 'orderbooks'
+
+    async def write(self, data: dict):
+        await self._KafkaCallback__connect()
+
+        data['ts'] = int(data.pop('timestamp') * 1_000_000_000)
+        data['receipt_ts'] = int(data.pop('receipt_timestamp') * 1_000_000_000)
+        data['bid'] = OrderedDict(sorted(data['book'].pop('bid').items(), reverse=True))
+        data['ask'] = OrderedDict(sorted(data['book'].pop('ask').items()))
+        del data['book']
+        del data['delta']
+        await self.producer.send_and_wait(self.topic, orjson.dumps(data, option=orjson.OPT_NON_STR_KEYS))  # orjson uses UTF-8 encoding by default
