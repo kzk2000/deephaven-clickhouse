@@ -10,7 +10,8 @@
 CREATE DATABASE IF NOT EXISTS cryptofeed;
 
 -- create table for ALL orderbook snapshots
-CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks
+--CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks
+CREATE TABLE IF NOT EXISTS TABLE cryptofeed.orderbooks
 (
     exchange        LowCardinality(String)
     , symbol        LowCardinality(String)
@@ -21,7 +22,8 @@ CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks
     , KafkaOffset   Int64
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(ts)
-ORDER BY (symbol, ts)
+TTL toDateTime(ts - INTERVAL 7 DAY)
+ORDER BY (symbol, exchange, ts)
 
 -- create Kafka table engine, flush every 1000ms
 CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks_queue

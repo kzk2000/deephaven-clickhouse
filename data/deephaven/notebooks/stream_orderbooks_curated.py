@@ -163,12 +163,13 @@ slippage_100k = dx.line(
     x="ts_bin", 
     y=["bid_slippage_100k", "ask_slippage_100k"],
     color_discrete_sequence=["red", "lightgreen", "lightblue"],
+   # color_discrete_map = dict(COINBASE= "green"),
     line_shape = 'hv',
     size_sequence=8,
     title="BTC-USD: Slippage for $100k",
     xaxis_titles = '',
     yaxis_titles = 'Slippage (bps)',
-    by=["exchange"],
+    by=["exchange", "variable"], # 'variable' dimension is a plotly oddity, see explanation at https://github.com/deephaven/deephaven-plugins/issues/209
 )
 
 
@@ -176,7 +177,8 @@ spreads_100k = dx.line(
     orderbook_one_symbol, 
     x="ts_bin", 
     y=["spread_100k_bps"],
-    color_discrete_sequence=["red", "lightgreen", "lightblue"],
+    #color_discrete_sequence=["red", "lightgreen", "lightblue"],
+    color_discrete_map = {("COINBASE", "BTC-USD"): "green"},
     line_shape = 'hv',
     size_sequence=8,
     title="Round-trip cost for $100k",
@@ -200,7 +202,7 @@ prices = dx.line(
 )
 
 
-#fig22 = dx.make_subplots(slippage_100k,spreads_100k, rows=1,cols=2)
+fig22 = dx.make_subplots(slippage_100k,spreads_100k, rows=1,cols=2)
 
 
 
