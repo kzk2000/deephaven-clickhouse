@@ -1,10 +1,10 @@
 
 -- uncomment these to start from scratch
-DROP TABLE IF EXISTS cryptofeed.orderbooks;
-DROP TABLE IF EXISTS cryptofeed.orderbooks_queue;
-DROP VIEW IF EXISTS cryptofeed.orderbooks_queue_mv;
-DROP TABLE IF EXISTS cryptofeed.orderbooks_out_queue;
-DROP VIEW IF EXISTS cryptofeed.orderbooks_out_queue_mv;
+--DROP TABLE IF EXISTS cryptofeed.orderbooks;
+--DROP TABLE IF EXISTS cryptofeed.orderbooks_queue;
+--DROP VIEW IF EXISTS cryptofeed.orderbooks_queue_mv;
+--DROP TABLE IF EXISTS cryptofeed.orderbooks_out_queue;
+--DROP VIEW IF EXISTS cryptofeed.orderbooks_out_queue_mv;
 
 -- create database schema
 CREATE DATABASE IF NOT EXISTS cryptofeed;
