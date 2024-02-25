@@ -9,9 +9,11 @@ RUN pip3 install -r ./requirements.txt
 COPY src/coinbase.py /usr/local/lib/python3.10/site-packages/cryptofeed/exchanges/coinbase.py
 
 # copy latest project changes
-COPY setup.py /setup.py
-COPY src /src
+COPY setup.py /cryptofeed/setup.py
+COPY src/ /cryptofeed/src
+
+WORKDIR /cryptofeed
 RUN pip3 install .
 
-RUN chmod +x ./src/script/cryptofeed_0_startup.sh
-CMD ["/src/script/cryptofeed_0_startup.sh"]
+RUN chmod +x /cryptofeed/src/script/cryptofeed_0_startup.sh
+CMD ["/cryptofeed/src/script/cryptofeed_0_startup.sh"]

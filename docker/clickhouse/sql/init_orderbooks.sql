@@ -1,10 +1,10 @@
 
 -- uncomment these to start from scratch
---DROP TABLE IF EXISTS cryptofeed.orderbooks;
---DROP TABLE IF EXISTS cryptofeed.orderbooks_queue;
---DROP VIEW IF EXISTS cryptofeed.orderbooks_queue_mv;
---DROP TABLE IF EXISTS cryptofeed.orderbooks_out_queue;
---DROP VIEW IF EXISTS cryptofeed.orderbooks_out_queue_mv;
+DROP TABLE IF EXISTS cryptofeed.orderbooks;
+DROP TABLE IF EXISTS cryptofeed.orderbooks_queue;
+DROP VIEW IF EXISTS cryptofeed.orderbooks_queue_mv;
+DROP TABLE IF EXISTS cryptofeed.orderbooks_out_queue;
+DROP VIEW IF EXISTS cryptofeed.orderbooks_out_queue_mv;
 
 -- create database schema
 CREATE DATABASE IF NOT EXISTS cryptofeed;
@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS TABLE cryptofeed.orderbooks
     exchange        LowCardinality(String)
     , symbol        LowCardinality(String)
     , ts            DateTime64(9)
-    , receipt_ts    DateTime64(9)
     , bid           Map(String, Float64)
     , ask           Map(String, Float64)
     , KafkaOffset   Int64
@@ -47,7 +46,6 @@ SELECT
   JSONExtractString(raw, 'exchange')                                                              AS exchange
   , JSONExtractString(raw, 'symbol')                                                              AS symbol
   , toDateTime64(JSONExtractString(raw, 'ts'), 9)                                                 AS ts
-  , toDateTime64(JSONExtractString(raw, 'receipt_ts'), 9)                                         AS receipt_ts
   , cast(JSONExtractKeysAndValues(raw, 'bid', 'Float64'), 'Map(String, Float64)')                 AS bid
   , cast(JSONExtractKeysAndValues(raw, 'ask', 'Float64'), 'Map(String, Float64)')                 AS ask
   , _offset                                                                                       AS KafkaOffset

@@ -10,5 +10,5 @@ RUN pip install --no-cache-dir deephaven-plugin-plotly deephaven-plugin-plotly-e
 
 COPY --from=js-plugins js-plugins/ /opt/deephaven/config/js-plugins/
 
-COPY app.d /opt/deephaven/config/app.d
-COPY deephaven.prop /opt/deephaven/config/deephaven.prop
+COPY ./config/app.d /opt/deephaven/config/app.d
+COPY ./config/deephaven.prop /opt/deephaven/config/deephaven.prop

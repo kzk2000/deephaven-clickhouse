@@ -7,7 +7,7 @@ def start(app: ApplicationState):
     print('Starting app mode...')
     # size = 42
     # app["hello"] = empty_table(size)
-    # app["world"] = time_table("00:00:01")
+    # app["world"] = time_table("PT1S")
 
 
 def initialize(func: Callable[[ApplicationState], None]):

@@ -159,8 +159,8 @@ def table_tabs(source):
     return ui.tabs(
         ui.tab_list(
             ui.item("Unfiltered", key="Unfiltered"),
-            ui.item(ui.icon("vsGithubAlt"), "CAT", key="CAT"),
-            ui.item("DOG", key="DOG"),
+            ui.item(ui.icon("vsAdd"), "CAT", key="CAT"),
+            ui.item(ui.icon("vsMute"), "DOG", key="DOG"),
         ),
         ui.tab_panels(
             ui.item(source, key="Unfiltered"),
@@ -171,7 +171,7 @@ def table_tabs(source):
     )
 
 
-tt = table_tabs(stocks)
+tt = table_tabs(stocks.tail(100))
 
 
 

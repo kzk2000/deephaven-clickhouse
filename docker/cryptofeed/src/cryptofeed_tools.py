@@ -64,7 +64,7 @@ class ClickHouseTradeKafka(KafkaCallback):
             data['size'] = data.pop('amount')
             data['trade_id'] = data.pop('id')
             del data['type']
-            await self.producer.send_and_wait(self.topic, orjson.dumps(data))   # orjson uses UTF-8 encoding by default
+            await self.producer.send_and_wait(self.topic, orjson.dumps(data))  # orjson uses UTF-8 encoding by default
         except:
             print("WARNING: ClickHouseTradeKafka.write() didn't fire - go check!")
             pass

@@ -4,6 +4,8 @@ from deephaven.ui import use_state
 from deephaven.plot.figure import Figure
 
 
+stocks = dx.data.stocks()
+
 ###############################################################################################################################
 # https://github.com/deephaven/deephaven-plugins/blob/main/plugins/ui/examples/README.md#form-with-submit
 @ui.component

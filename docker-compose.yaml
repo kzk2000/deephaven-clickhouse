@@ -3,7 +3,7 @@ version: '3'
 services:
   redpanda:
     container_name: redpanda
-    image: docker.redpanda.com/redpandadata/redpanda:v23.1.8
+    image: docker.redpanda.com/redpandadata/redpanda:v23.3.6
     command:
       - redpanda
       - start
@@ -24,7 +24,7 @@ services:
 
   console:
     container_name: redpanda-console
-    image: docker.redpanda.com/vectorized/console:v2.2.4
+    image: docker.redpanda.com/vectorized/console:v2.4.3
     networks:
       - ch_ntw
     entrypoint: /bin/sh

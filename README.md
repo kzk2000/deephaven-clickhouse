@@ -1,6 +1,6 @@
 # Deephaven + Clickhouse
 TLDR;
-Deephaven Community doesn't provide a built-in persistent storage layer (as of Apr 2023), so let's use 
+Deephaven Community doesn't provide a built-in persistent storage layer (as of Spring 2024), so let's use 
 [Clickhouse](https://clickhouse.com/) to create one.<br><br>
 This repo shows how to 
 * leverage [Cryptofeed](https://github.com/bmoscon/cryptofeed) to subscribe to 24/7 real-time Crypto market data
@@ -12,8 +12,8 @@ This repo shows how to
 ## General Setup 
 Everything should "just work", simply run this and wait until all 5 containers start up:<br>
 ```
-docker-compose build --no-cache
-docker-compose up -d  
+docker compose build --no-cache
+docker compose up -d  
 ```
 * Deephaven UI is running at http://localhost:10000/ide/
 * ClickHouse Play is running at http://localhost:8123/play
