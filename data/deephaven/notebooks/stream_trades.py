@@ -20,7 +20,6 @@ def get_trades():
         key_spec=ck.KeyValueSpec.IGNORE,
         value_spec=ck.json_spec([
             ('ts', dht.Instant),
-            ('receipt_ts', dht.Instant),
             ('symbol', dht.string),
             ('exchange', dht.string),
             ('side', dht.string),
@@ -46,7 +45,7 @@ def get_trades():
     """
     trades_clickhouse = tools.query_clickhouse(query_history)
 
-    return merge([trades_clickhouse, trades_kafka]).drop_columns(['KafkaOffset', 'receipt_ts'])
+    return merge([trades_clickhouse, trades_kafka]).drop_columns(['KafkaOffset'])
 
 
 # create 'trades'

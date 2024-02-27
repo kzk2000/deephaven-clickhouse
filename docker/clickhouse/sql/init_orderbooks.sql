@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS TABLE cryptofeed.orderbooks
     , KafkaOffset   Int64
 ) Engine = MergeTree
 PARTITION BY toYYYYMM(ts)
-TTL toDateTime(ts - INTERVAL 7 DAY)
-ORDER BY (symbol, exchange, ts)
+TTL toDateTime(ts - INTERVAL 1 DAY)
+ORDER BY (symbol, exchange, ts);
 
 -- create Kafka table engine, flush every 1000ms
 CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks_queue

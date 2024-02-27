@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS cryptofeed.trades
 (
     symbol LowCardinality(String),
     ts DateTime64(9),
-    receipt_ts DateTime64(9),
     exchange LowCardinality(String),
     side LowCardinality(String),
     size Float64,
@@ -22,14 +21,13 @@ CREATE TABLE IF NOT EXISTS cryptofeed.trades
     KafkaOffset Int64
 ) ENGINE = MergeTree
 PARTITION BY toYYYYMM(ts)
-ORDER BY (symbol, ts)
+ORDER BY (symbol, ts);
 
 -- create trades Kafka table engine, flush every 1000ms
 CREATE TABLE IF NOT EXISTS cryptofeed.trades_queue
 (
     symbol LowCardinality(String),
     ts DateTime64(9),
-    receipt_ts DateTime64(9),
     exchange LowCardinality(String),
     side LowCardinality(String),
     size Float64,
