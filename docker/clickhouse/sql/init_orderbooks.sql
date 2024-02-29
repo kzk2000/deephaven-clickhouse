@@ -11,7 +11,7 @@ CREATE DATABASE IF NOT EXISTS cryptofeed;
 
 -- create table for ALL orderbook snapshots
 --CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks
-CREATE TABLE IF NOT EXISTS TABLE cryptofeed.orderbooks
+CREATE TABLE IF NOT EXISTS cryptofeed.orderbooks
 (
     exchange        LowCardinality(String)
     , symbol        LowCardinality(String)
