@@ -15,9 +15,8 @@ services:
     ports:
       - "9092:9092"
       - "29092:29092"
-#    volumes:
-#      - ./data/redpanda/data:/var/lib/redpanda/data
-#      - ./data/redpanda/logs:/var/lib/redpanda/logs
+    volumes:
+       - ./data/redpanda:/var/lib/redpanda
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost:9644/v1/status/ready"]
       start_period: 5s
