@@ -14,6 +14,10 @@ Everything should "just work", simply run this and wait until all 5 containers s
 ```
 docker compose build --no-cache
 docker compose up -d  
+
+# (optional) ensure your hard drive won't blow up 
+docker exec redpanda rpk topic alter-config trades --set retention.ms=600000
+docker exec redpanda rpk topic alter-config orderbooks --set retention.ms=600000
 ```
 * Deephaven UI is running at http://localhost:10000/ide/
 * ClickHouse Play is running at http://localhost:8123/play
