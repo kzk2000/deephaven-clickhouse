@@ -99,12 +99,16 @@ def stock_table_input(source, default_sym=""):
     def handle_row_double_press(row, data):
         set_sym(data["symbol"]["value"])
 
+    def handle_on_cell_press(data):
+        print("column press")
+        print(data)
+
     return [
         ui.column(
             ui.row(
                 ui.stack(
                     ui.panel(
-                        ui.table(t1_last).on_row_double_press(handle_row_double_press), 
+                        ui.table(t1_last, on_row_double_press=handle_row_double_press, on_column_press=handle_on_cell_press), 
                         title="Last Trade"
                     ),
                     width=30,
@@ -123,8 +127,8 @@ def stock_table_input(source, default_sym=""):
                 ),
             ),
             ui.row(
-               # ui.panel(p, title="Chart"),
-                ui.panel(p2, title="Chart2"),
+                ui.panel(p, title="DH Table Trades"),
+                ui.panel(p2, title="Clickhouse Trades"),
             )
         ),
     ]
@@ -136,6 +140,3 @@ sti = stock_table_input(trades, "BTC-USD")
 
 my_dash = ui.dashboard(sti)
       
-
-
-

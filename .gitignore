@@ -10,7 +10,6 @@ __pycache__
 data/clickhouse/*
 !data/clickhouse/.gitkeep
 data/redpanda/*
-!data/redpanda/.gitkeep
 data/parquet/*
 eggs
 zzz_private

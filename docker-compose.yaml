@@ -9,14 +9,15 @@ services:
       - start
       - --smp 1
       - --memory 1G
-      - --mode dev-container
-      - --kafka-addr internal://0.0.0.0:29092,external://0.0.0.0:9092
-      - --advertise-kafka-addr internal://redpanda:29092,external://localhost:9092
+# this is no longer needed as we provide the configurations via ./docker/redpanda/redpanda.yaml
+#      - --kafka-addr internal://0.0.0.0:29092,external://0.0.0.0:9092
+#      - --advertise-kafka-addr internal://redpanda:29092,external://localhost:9092
     ports:
       - "9092:9092"
       - "29092:29092"
     volumes:
-       - ./data/redpanda:/var/lib/redpanda
+      - ./data/redpanda:/var/lib/redpanda
+      - ./docker/redpanda/redpanda.yaml:/etc/redpanda/redpanda.yaml:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost:9644/v1/status/ready"]
       start_period: 5s
