@@ -14,10 +14,6 @@ Everything should "just work", simply run this and wait until all 5 containers s
 ```
 docker compose build --no-cache
 docker compose up -d  
-
-# (optional) ensure your hard drive won't blow up 
-docker exec redpanda rpk topic alter-config trades --set retention.ms=600000
-docker exec redpanda rpk topic alter-config orderbooks --set retention.ms=600000
 ```
 * Deephaven UI is running at http://localhost:10000/ide/
 * ClickHouse Play is running at http://localhost:8123/play
@@ -31,13 +27,15 @@ docker exec redpanda rpk topic alter-config orderbooks --set retention.ms=600000
 ```
 ├── data                                <- Project data
 │   ├── clickhouse                          <- volume mount for the 'clickhouse' container
-│   └── deephaven                           <- volume mount for the 'deephaven' container
-│       ├── layouts                         <- contains .json file for Deephaven app layout 
-│       └── notebooks                       <- Deephaven File Explorer, all DH python scripts are stored here
+│   ├── deephaven                           <- volume mount for the 'deephaven' container
+│   │   ├── layouts                         <- contains .json file for Deephaven app layout 
+│   │   └── notebooks                       <- Deephaven File Explorer, all DH python scripts are stored here
+│   └── redpanda                            <- volume mount for the 'redpanda' container
 │
 ├── docker                               <- anything needed for Docker builds 
 │   ├── clickhouse                          <- build files for ClickHouse                               
 │   ├── cryptofeed                          <- build files for Cryptofeed 
+│   ├── redpanda                            <- build files for Redpanda (e.g. Kafka retention of 1min)
 │   └── deephaven                           <- build files for Deephaven
 │
 ├── .gitignore                          <- List of files ignored by git

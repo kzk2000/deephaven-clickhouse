@@ -6,6 +6,7 @@ from deephaven.plot.selectable_dataset import one_click
 
 import deephaven_tools as tools
 
+
 def get_trades():
     """
     Wrapper to not polute the global name space
@@ -28,9 +29,9 @@ def get_trades():
             ('trade_id', dht.int_),
         ]),
         table_type=ck.TableType.blink()
-    )\
-    .drop_columns(['KafkaPartition', 'KafkaTimestamp'])\
-    .update_view('is_db = (long) 0')
+    ) \
+        .drop_columns(['KafkaPartition', 'KafkaTimestamp']) \
+        .update_view('is_db = (long) 0')
 
     trades_kafka = tools.blink_tail_by(trades_blink, 5000, by=['symbol'])
     trades_kafka.j_table.awaitUpdate()  # this waits for at least 1 tick before we continue below this line
@@ -39,7 +40,7 @@ def get_trades():
     query_history = f"""
       SELECT *, toInt64(1) as is_db FROM cryptofeed.trades
       WHERE
-        ts >= now() - INTERVAL 10 MINUTE
+        ts >= now() - INTERVAL 60 MINUTE
         AND ts < '{tools.get_first_ts(trades_kafka)}'
       ORDER BY ts ASC
     """
@@ -54,7 +55,3 @@ trades = get_trades()
 # derive summay stats
 tick_count_by_exch = trades.agg_by(agg.count_('count'), by=['symbol', 'exchange'])
 last_trade = trades.last_by(['symbol']).sort(['symbol'])
-
-
-
-

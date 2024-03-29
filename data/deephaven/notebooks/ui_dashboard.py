@@ -76,7 +76,7 @@ def stock_table_input(source, default_sym=""):
     query_history = f"""
     SELECT * FROM cryptofeed.trades
     WHERE
-        ts >= now() - INTERVAL 10 MINUTE
+        ts >= now() - INTERVAL 60 MINUTE
         AND symbol = '{sym}'
     ORDER BY ts ASC
     """
