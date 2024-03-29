@@ -20,8 +20,8 @@ docker compose up -d
   * CLICKHOUSE_USER: default
   * CLICKHOUSE_PASSWORD: password
 * Redpanda Console is running at http://localhost:8080/overview
+* Data is stored locally under the `/data/[clickhouse|deephaven|redpanda]` folders which are mounted into the docker images
 
-* Data is stored locally under the `/data/[deephaven|clickhouse]` folders which are mounted into the docker images
 
 ## Project structure
 ```
