@@ -5,7 +5,7 @@ ENV IS_DOCKER True
 COPY requirements.txt /requirements.txt
 RUN pip3 install -r ./requirements.txt
 
-# local hack to make L2 feeds work again (probably should be merged into the Cryptofeed packageoriginal)
+# local hack to avoid auth requirements by using undocuments CB Exchange end points
 COPY src/coinbase.py /usr/local/lib/python3.10/site-packages/cryptofeed/exchanges/coinbase.py
 
 # copy latest project changes

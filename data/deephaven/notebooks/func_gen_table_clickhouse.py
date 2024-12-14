@@ -14,7 +14,7 @@ def get_clickhouse_last100():
     # retval = tools.get_candles(symbols, n_rows=20, freq='5 second')
 
     # get ticks from ClickHouse
-    retval = tools.get_ticks(symbols, n_ticks=100)
+    retval = tools.get_ticks(symbols, n_ticks=1000)
     return retval
 
 

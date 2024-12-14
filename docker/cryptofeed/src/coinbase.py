@@ -26,8 +26,8 @@ LOG = logging.getLogger('feedhandler')
 
 class Coinbase(Feed, CoinbaseRestMixin):
     id = COINBASE
-    websocket_endpoints = [WebsocketEndpoint('wss://ws-feed.pro.coinbase.com', options={'compression': None})]
-    rest_endpoints = [RestEndpoint('https://api.pro.coinbase.com', routes=Routes('/products', l3book='/products/{}/book?level=3'))]
+    websocket_endpoints = [WebsocketEndpoint('wss://ws-feed.exchange.coinbase.com', options={'compression': None})]
+    rest_endpoints = [RestEndpoint('https://api.exchange.coinbase.com', routes=Routes('/products', l3book='/products/{}/book?level=3'))]
 
     websocket_channels = {
         L2_BOOK: 'level2',

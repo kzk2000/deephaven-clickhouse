@@ -57,21 +57,15 @@ trades_plot = stock_widget_plot(trades, "BTC-USD", "COINBASE")
 # trades_tabs = table_tabs(trades)
 
 
-
-
 @ui.component
 def stock_table_input(source, default_sym=""):
     sym, set_sym = use_state(default_sym)
 
-    t1 = source.drop_columns(['is_db', 'trade_id']).sort(['ts'])
-    t1_last = t1.last_by(['symbol']).sort(['symbol'])
+    t1 = source.drop_columns(["is_db", "trade_id"]).sort(["ts"])
+    t1_last = t1.last_by(["symbol"]).sort(["symbol"])
 
     t2 = source.where([f"symbol==`{sym.upper()}`"])
-    p = (
-        Figure()
-        .plot_xy(series_name=f"{sym}", t=t2, x="ts", y="price")
-        .show()
-    )
+    p = Figure().plot_xy(series_name=f"{sym}", t=t2, x="ts", y="price").show()
 
     query_history = f"""
     SELECT * FROM cryptofeed.trades
@@ -84,19 +78,21 @@ def stock_table_input(source, default_sym=""):
 
     p2 = dx.scatter(
         trades_clickhouse,
-        x="ts", 
+        x="ts",
         y=["price"],
         color_discrete_sequence=["red", "lightgreen", "lightblue"],
         # color_discrete_map = dict(COINBASE= "green"),
         # line_shape = 'hv',
         size_sequence=5,
         title="Trades (last 10 minutes)",
-        xaxis_titles = '',
-        yaxis_titles = 'Price ($)',
-        by=["exchange"], 
+        xaxis_titles="",
+        yaxis_titles="Price ($)",
+        by=["exchange"],
     )
 
-    def handle_row_double_press(row, data):
+    def handle_row_double_press(data):
+        print("***")
+        print(data)
         set_sym(data["symbol"]["value"])
 
     def handle_on_cell_press(data):
@@ -108,20 +104,24 @@ def stock_table_input(source, default_sym=""):
             ui.row(
                 ui.stack(
                     ui.panel(
-                        ui.table(t1_last, on_row_double_press=handle_row_double_press, on_column_press=handle_on_cell_press), 
-                        title="Last Trade"
+                        ui.table(
+                            t1_last,
+                            on_row_double_press=handle_row_double_press,
+                            on_column_press=handle_on_cell_press,
+                        ),
+                        title="Last Trade",
                     ),
                     width=30,
                 ),
                 ui.stack(
                     ui.panel(
-                        t2, 
+                        t2,
                         title=f"Filtered Trades",
                     ),
                 ),
                 ui.stack(
                     ui.panel(
-                        trades_clickhouse, 
+                        trades_clickhouse,
                         title=f"Clickhouse Trades",
                     ),
                 ),
@@ -129,14 +129,12 @@ def stock_table_input(source, default_sym=""):
             ui.row(
                 ui.panel(p, title="DH Table Trades"),
                 ui.panel(p2, title="Clickhouse Trades"),
-            )
+            ),
         ),
     ]
-    
-    
+
 
 sti = stock_table_input(trades, "BTC-USD")
 
 
 my_dash = ui.dashboard(sti)
-      

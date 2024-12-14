@@ -19,7 +19,8 @@ def text_filter_table(source, column):
         flex_grow=1,
     )
 
-pp = text_filter_table(stocks, "sym")
+
+pp = text_filter_table(stocks, "Sym")
 
 
 ###############################################################################################################################
@@ -39,6 +40,7 @@ def range_table(source, column):
 
 
 srt = range_table(stocks, "size")
+
 
 ###############################################################################################################################
 # https://github.com/deephaven/deephaven-plugins/blob/main/plugins/ui/examples/README.md#table-with-required-filters
@@ -174,7 +176,6 @@ def table_tabs(source):
 tt = table_tabs(stocks.tail(100))
 
 
-
 ###############################################################################################################################
 # https://github.com/deephaven/deephaven-plugins/blob/main/plugins/ui/examples/README.md#listening-to-table-updates
 import deephaven.ui as ui
@@ -195,14 +196,12 @@ def add_as_op(ls, t, op):
 
 @ui.component
 def monitor_changed_data(source: Table):
-
     changed, set_changed = ui.use_state(empty_table(0))
 
     show_added, set_show_added = ui.use_state(True)
     show_removed, set_show_removed = ui.use_state(True)
 
     def listener(update, is_replay):
-
         to_merge = []
 
         if (added_dict := update.added()) and show_added:
@@ -243,9 +242,9 @@ from deephaven.table import Table
 from deephaven import time_table, agg
 import deephaven.plot.express as dx
 
+
 @ui.component
 def watch_lizards(source: Table):
-
     sold_lizards = source.where(["side in `sell`", "sym in `LIZARD`"])
     exchange_count_table = sold_lizards.view(["exchange"]).count_by(
         "count", by=["exchange"]

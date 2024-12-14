@@ -6,6 +6,7 @@ from deephaven.plot.figure import Figure
 
 stocks = dx.data.stocks()
 
+
 ###############################################################################################################################
 # https://github.com/deephaven/deephaven-plugins/blob/main/plugins/ui/examples/README.md#form-with-submit
 @ui.component
@@ -23,6 +24,7 @@ def form_submit_example():
 
 fs = form_submit_example()
 
+
 ###############################################################################################################################
 # https://github.com/deephaven/deephaven-plugins/blob/main/plugins/ui/examples/README.md#form-two-variables
 @ui.component
@@ -39,6 +41,7 @@ def form_example():
 
 
 fe = form_example()
+
 
 ###############################################################################################################################
 @ui.component
@@ -94,4 +97,3 @@ def stock_widget_plot(source, default_sym="", default_exchange=""):
 
 
 swp = stock_widget_plot(stocks, "CAT", "TPET")
-
