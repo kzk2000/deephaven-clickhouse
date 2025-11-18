@@ -1,3 +1,4 @@
+import asyncio
 from cryptofeed import FeedHandler
 from cryptofeed.defines import L2_BOOK
 from cryptofeed.exchanges import Coinbase, Kraken, Bitstamp
@@ -24,6 +25,14 @@ def main():
     f.add_feed(Coinbase(max_depth=2000, channels=[L2_BOOK], symbols=cft.SYMBOLS, callbacks=callbacks))
     f.add_feed(Bitstamp(channels=[L2_BOOK], symbols=cft.SYMBOLS, callbacks=callbacks))
     f.add_feed(Kraken(channels=[L2_BOOK], symbols=cft.SYMBOLS, callbacks=callbacks))
+    
+    # Fix for Python 3.10+ asyncio event loop issue
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    
     f.run()
 
 

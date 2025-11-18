@@ -1,33 +1,51 @@
 services:
   redpanda:
     container_name: redpanda
-    image: docker.redpanda.com/redpandadata/redpanda:v23.3.6
+    image: docker.redpanda.com/redpandadata/redpanda:v25.2.11
+    user: "0:0"
     command:
       - redpanda
       - start
-      - --smp 1
-      - --memory 1G
-# this is no longer needed as we provide the configurations via ./docker/redpanda/redpanda.yaml
-#      - --kafka-addr internal://0.0.0.0:29092,external://0.0.0.0:9092
-#      - --advertise-kafka-addr internal://redpanda:29092,external://localhost:9092
+      - --smp=1
+      - --memory=1G
+      - --kafka-addr=internal://0.0.0.0:29092,external://0.0.0.0:9092
+      - --advertise-kafka-addr=internal://redpanda:29092,external://localhost:9092
+      - --rpc-addr=0.0.0.0:33145
+      - --advertise-rpc-addr=redpanda:33145
     ports:
       - "9092:9092"
       - "29092:29092"
-    volumes:
-     # these mounts seem to be required on MacOS, not needed for Linux
-     # - ./data/redpanda/data:/var/lib/redpanda/data
-     # - ./data/redpanda/logs:/var/lib/redpanda/logs
-      - ./docker/redpanda/redpanda.yaml:/etc/redpanda/redpanda.yaml:ro
+      - "9644:9644"
     healthcheck:
-      test: ["CMD", "curl", "-f", "localhost:9644/v1/status/ready"]
-      start_period: 5s
-      interval: 3s
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:9644/v1/status/ready
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
     networks:
       - ch_ntw
 
-  console:
+  redpanda-init:
+    container_name: redpanda-init
+    image: docker.redpanda.com/redpandadata/redpanda:v25.2.11
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        rpk topic alter-config trades --set retention.ms=60000 -X brokers=redpanda:29092 || true
+        rpk topic alter-config orderbooks --set retention.ms=60000 -X brokers=redpanda:29092 || true
+    networks:
+      - ch_ntw
+
+  redpanda-console:
     container_name: redpanda-console
-    image: docker.redpanda.com/vectorized/console:v2.4.3
+    image: docker.redpanda.com/redpandadata/console:v3.2.2
     networks:
       - ch_ntw
     entrypoint: /bin/sh
@@ -67,7 +85,7 @@ services:
 
   clickhouse:
     container_name: clickhouse
-    image: clickhouse/clickhouse-server:24.3.1.2672
+    image:  clickhouse/clickhouse-server:25.10.2.65
     environment:
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: password

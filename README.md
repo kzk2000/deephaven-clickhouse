@@ -1,6 +1,6 @@
 # Deephaven + Clickhouse
 TLDR;
-Deephaven Community doesn't provide a built-in persistent storage layer (as of Spring 2024), so let's use 
+Deephaven Community doesn't provide a built-in persistent storage layer (as of Fall 2025), so let's use 
 [Clickhouse](https://clickhouse.com/) to create one.<br><br>
 This repo shows how to 
 * leverage [Cryptofeed](https://github.com/bmoscon/cryptofeed) to subscribe to 24/7 real-time Crypto market data
